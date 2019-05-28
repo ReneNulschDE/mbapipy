@@ -51,19 +51,19 @@ code_challenge = _generate_code_challenge(code_verifier)
 
 
 #Start Login Session - Step 1 call API - Result is 302 redirect to html form
-url_step1 = "{0}/oidc10/auth/oauth/v2/authorize".format(URL_API)
-url_step1 += "?response_type=code&"
-url_step1 += "client_id={0}&".format(CLIENT_ID)
-url_step1 += "code_challenge={0}&".format(code_challenge)
-url_step1 += "code_challenge_method=S256&"
-url_step1 += "scope=mma:backend:all openid ciam-uid profile email&"
-url_step1 += "redirect_uri={0}".format(AUTH_REDIR_URL)
+url_step1 = "{0}/oidc10/auth/oauth/v2/authorize".format(URL_API) \
+            + "?response_type=code&" \
+            + "client_id={0}&".format(CLIENT_ID) \
+            + "code_challenge={0}&".format(code_challenge) \
+            + "code_challenge_method=S256&" \
+            + "scope=mma:backend:all openid ciam-uid profile email&" \
+            + "redirect_uri={0}".format(AUTH_REDIR_URL)
 
 
 
 mb_headers = {'Accept-Language': 'en-US', 'X-Requested-With': 'com.daimler.mm.android', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8', 'User-Agent': 'Mozilla/5.0 (Linux; Android 5.1; Google Nexus 5 Build/LMY47D) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/39.0.0.0 Mobile Safari/537.36'}
 
-session.proxies.update({'https': 'http://localhost:8866' })
+#session.proxies.update({'https': 'http://localhost:8866' })
 
 # First we get a 302 redirect to the login server
 login_page = session.get(url_step1, verify=LOGIN_VERIFY_SSL_CERT, headers=mb_headers)
@@ -153,7 +153,7 @@ mb_headers = {
 
 
 tokenSession = requests.session()
-tokenSession.proxies.update({'https': 'http://localhost:8866' })
+#tokenSession.proxies.update({'https': 'http://localhost:8866' })
 
 
 step_4_result = tokenSession.post(step_4_url, 
