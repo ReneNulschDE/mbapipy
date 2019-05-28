@@ -7,9 +7,11 @@ Attributes:
     update_interval (int): min update intervall in seconds
 """
 
+import base64
 import hashlib
 import json
 import logging
+from os import urandom
 import random
 import string
 import time
@@ -32,12 +34,10 @@ CLIENT_ID = "4390b0db-4be9-40e9-9147-5845df537beb"
 API_ID = "MCMAPP.FE_PROD"
 AUTH_REDIR_URL = "https://cgw.meapp.secure.mercedes-benz.com/endpoint/api/v1/redirect"
 
-
-
 API_VEHICLES = "backend/vehicles"
-ME_STATUS_URL = "{0}/backend/users/identity".format(SERVER_API)
-CAR_STATUS_URL = "{0}/backend/vehicles/%s/status".format(SERVER_API)
-CAR_DETAIL_URL = "{0}/backend/vehicles/%s/converant".format(SERVER_API)
+ME_STATUS_URL = "{0}/backend/users/identity".format(URL_API)
+CAR_STATUS_URL = "{0}/backend/vehicles/%s/status".format(URL_API)
+CAR_DETAIL_URL = "{0}/backend/vehicles/%s/converant".format(URL_API)
 
 CONTENT_TYPE_JSON = "application/json;charset=UTF-8"
 
@@ -124,8 +124,9 @@ class StateOfObject(object):
         self.value = None
         self.timestamp = None
         if unit is not None:
-        self.retrievalstatus = None
+            self.retrievalstatus = None
             self.unit = unit
+
         if value is not None:
             self.value = value
         if retrievalstatus is not None:
@@ -204,7 +205,7 @@ class CarAttribute(object):
 class Controller(object):
     """ Simple Mercedes me API.
     """
-    def __init__(self, username, password, update_interval):
+    def __init__(self, auth_handler, update_interval):
 
         self.__lock = RLock()
         self.cars = []
@@ -212,10 +213,8 @@ class Controller(object):
         self.is_valid_session = False
         self.last_update_time = 0
 
-        self._get_initial_tokens(username, passord)
-
         self.session = requests.session()
-        self.session_cookies = self._get_session_cookies(username, password)
+        # login
         self.session_refreshing = False
         self._get_cars()
 
@@ -464,9 +463,8 @@ class Controller(object):
 
     def _get_initial_tokens(self, username, password):
         session = requests.session()
-        code_verifier = _randomString(64)
-        code_challenge = _generate_code_challenge(code_verifier)
-
+        code_verifier = self._random_string(64)
+        code_challenge = self._generate_code_challenge(code_verifier)
 
         #Start Login Session - Step 1 call API - Result is 302 redirect to html form
         url_step1 = "{0}/oidc10/auth/oauth/v2/authorize".format(URL_API)
@@ -477,9 +475,11 @@ class Controller(object):
         url_step1 += "scope=mma:backend:all openid ciam-uid profile email&"
         url_step1 += "redirect_uri={0}".format(AUTH_REDIR_URL)
 
-
-
-        mb_headers = {'Accept-Language': 'en-US', 'X-Requested-With': 'com.daimler.mm.android', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8', 'User-Agent': 'Mozilla/5.0 (Linux; Android 5.1; Google Nexus 5 Build/LMY47D) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/39.0.0.0 Mobile Safari/537.36'}
+        mb_headers = {'Accept-Language': 'en-US',
+                      'X-Requested-With': 'com.daimler.mm.android',
+                      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                      'User-Agent': 'Mozilla/5.0 (Linux; Android 5.1; Google Nexus 5 Build/LMY47D) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/39.0.0.0 Mobile Safari/537.36'
+                      }
 
         session.proxies.update({'https': 'http://localhost:8866' })
 
@@ -503,9 +503,9 @@ class Controller(object):
 
 
         mb_headers = {
-            'Accept-Language': 'en-US', 
-            'X-Requested-With': 'com.daimler.mm.android', 
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8', 
+            'Accept-Language': 'en-US',
+            'X-Requested-With': 'com.daimler.mm.android',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'User-Agent': 'Mozilla/5.0 (Linux; Android 5.1; Google Nexus 5 Build/LMY47D) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/39.0.0.0 Mobile Safari/537.36',
             'Referer': login_page.url,
             'Origin' : URL_LOGIN,
@@ -516,9 +516,9 @@ class Controller(object):
         step_2_url = 'https://login.secure.mercedes-benz.com/wl/login'
 
         step_2_result = session.post(step_2_url,
-                                    data=form,
-                                    verify=LOGIN_VERIFY_SSL_CERT, 
-                                    headers=mb_headers
+                                     data=form,
+                                     verify=LOGIN_VERIFY_SSL_CERT,
+                                     headers=mb_headers
                                     )
 
         # Result should be a Webpage with a form, Javascript auto post the form
@@ -542,13 +542,14 @@ class Controller(object):
             }
 
         # The expected result is a redirect to AUTH_REDIR_URL, 
-        # we do not want the redirect, we are interesseted in the OAuth code only
+        # we do not want the redirect, 
+        # we are interesseted in the OAuth code only
         # therefore we set allow_redirect to false
-        step_3_result = session.post(step_3_url, 
-                                data=step_3_form, 
-                                verify=LOGIN_VERIFY_SSL_CERT, 
-                                headers=mb_headers, 
-                                allow_redirects=False)
+        step_3_result = session.post(step_3_url,
+                                     data=step_3_form,
+                                     verify=LOGIN_VERIFY_SSL_CERT,
+                                     headers=mb_headers,
+                                     allow_redirects=False)
 
         if step_3_result.status_code == 302:
             location = urlparse(step_3_result.headers['Location'])
@@ -570,69 +571,19 @@ class Controller(object):
             }
 
 
-        tokenSession = requests.session()
-        tokenSession.proxies.update({'https': 'http://localhost:8866' })
-
-
-        step_4_result = tokenSession.post(step_4_url, 
-                                    verify=LOGIN_VERIFY_SSL_CERT, 
-                                    headers=mb_headers,
-                                    allow_redirects=False,
-                                    cookies=None)
+        step_4_result = session.post(step_4_url, 
+                                     verify=LOGIN_VERIFY_SSL_CERT, 
+                                     headers=mb_headers,
+                                     allow_redirects=False,
+                                     cookies=None)
 
         print(step_4_result.text)
 
-    def _get_session_cookies(self, username, password):
-        # Start session and get login form.
-        session = self.session
-        loginpage = session.get(LOGIN_STEP1_URL, verify=LOGIN_VERIFY_SSL_CERT)
-
-        # Get the hidden elements and put them in our form.
-        login_html = lxml.html.fromstring(loginpage.text)
-        hidden_elements = login_html.xpath('//form//input')
-        form = {x.attrib['name']: x.attrib['value'] for x in hidden_elements}
-
-        # "Fill out" the form.
-        form['username'] = username
-        form['password'] = password
-        form['remember-me'] = 1
-
-        # login and check the values.
-        url = "{0}{1}".format(SERVER_LOGIN, LOGIN_STEP2_URL)
-        loginpage2 = session.post(url, data=form, verify=LOGIN_VERIFY_SSL_CERT)
-
-        _LOGGER.info(
-            "Login step 2 http code %s", loginpage2.status_code)
-
-        # step 3
-        login2_html = lxml.html.fromstring(loginpage2.text)
-        hidden_elements = login2_html.xpath('//form//input')
-        form = {x.attrib['name']: x.attrib['value'] for x in hidden_elements}
-
-        if DEBUG_MODE:
-            file = open("LoginStep2.txt", "w")
-            file.write(loginpage2.text)
-            file.close()
-
-        loginpage3 = session.post(LOGIN_STEP3_URL,
-                                  data=form,
-                                  verify=LOGIN_VERIFY_SSL_CERT)
-
-        _LOGGER.info(
-            "Login step 3 http code %s", loginpage3.status_code)
-
-        if DEBUG_MODE:
-            file = open("LoginStep3.txt", "w")
-            file.write(loginpage3.text)
-            file.close()
-
-        self.is_valid_session = True
-        return session.cookies
 
     def _retrieve_api_result(self, car_id, api):
         return self._retrieve_json_at_url(
             "{}/{}/{}/{}".format(
-                SERVER_APP,
+                URL_API,
                 API_VEHICLES,
                 car_id,
                 api))
@@ -656,49 +607,19 @@ class Controller(object):
             self.is_valid_session = False
             self.session = None
             self.session = requests.session()
-            self._get_session_cookies(self.username, self.password)
+            #login
             return
         _LOGGER.debug("Connect to URL %s Status Code: %s Content: %s", str(url),
                       str(res.status_code), res.text)
         return res.json()
 
-    def _randomString(length=64):
+    def _random_string(self, length=64):
         """Generate a random string of fixed length """
         return str(base64.urlsafe_b64encode(urandom(length)), 
-                                            "utf-8").rstrip('=')
+                   "utf-8").rstrip('=')
 
-    def _generate_code_challenge(code):
+    def _generate_code_challenge(self, code):
         """Generate a hash of the given string """
         m = hashlib.sha256()
         m.update(code.encode("utf-8"))
         return str(base64.urlsafe_b64encode(m.digest()), "utf-8").rstrip('=')
-    
-    def _save_token_info(self, token_info):
-        if self.cache_path:
-            try:
-                f = open(self.cache_path, 'w')
-                f.write(json.dumps(token_info))
-                f.close()
-            except IOError:
-                self._warn("couldn't write token cache to " + self.cache_path)
-
-    def get_cached_token(self):
-        ''' Gets a cached auth token
-        '''
-        token_info = None
-        if self.cache_path:
-            try:
-                f = open(self.cache_path)
-                token_info_string = f.read()
-                f.close()
-                token_info = json.loads(token_info_string)
-
-                if self.is_token_expired(token_info):
-                    token_info = self.refresh_access_token(token_info['refresh_token'])
-
-            except IOError:
-                pass
-        return token_info
-
-    def is_token_expired(self, token_info):
-        return is_token_expired(token_info)
