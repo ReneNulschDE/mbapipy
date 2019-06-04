@@ -7,13 +7,13 @@ https://home-assistant.io/components/device_tracker.mercedesme/
 import logging
 from datetime import timedelta
 
-from custom_components.mercedesmebeta import DATA_MME
+from custom_components.mercedesmeapi import DATA_MME
 from homeassistant.helpers.event import track_time_interval
 from homeassistant.util import Throttle
 
 _LOGGER = logging.getLogger(__name__)
 
-DEPENDENCIES = ['mercedesmebeta']
+DEPENDENCIES = ['mercedesmeapi']
 
 MIN_TIME_BETWEEN_SCANS = timedelta(seconds=30)
 
@@ -54,7 +54,7 @@ class MercedesMEDeviceTracker(object):
             if location is None:
                 continue
 
-            dev_id = device.id
+            dev_id = device.finorvin
             name = device.licenseplate
 
             lat = location.latitude.value
