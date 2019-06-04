@@ -30,88 +30,109 @@ DEPENDENCIES = ['http']
 _LOGGER = logging.getLogger(__name__)
 
 BINARY_SENSORS = {
-    'warningenginelight': ['Engine Light Warning', None, 
-                           'binarysensors', 'warningenginelight', 'value', None,
-                           {
-                               'warningbrakefluid',
-                               'warningwashwater',
-                               'warningcoolantlevellow',
-                               'warninglowbattery'
-                           }],
-    'parkbrakestatus': ['Park Brake Status', None, 'binarysensors',
-                        'parkbrakestatus', 'value', None,
-                        {'preWarningBrakeLiningWear'}],
-    'windowsClosed':    ['Windows Closed', None, 'windows',
-                         'windowsClosed', 'value', None, {
-                             "windowstatusrearleft",
-                             "windowstatusrearright",
-                             "windowstatusfrontright",
-                             "windowstatusfrontleft",
-                         }],
-    'tirewarninglamp':  ['Tire Warning', None, 'tires',
-                         'tirewarninglamp', 'value', None, 
-                         {
-                             "tirepressureRearLeft",
-                             "tirepressureRearRight",
-                             "tirepressureFrontRight",
-                             "tirepressureFrontLeft",
-                             "tirewarningsrdk",
-                             "tirewarningsprw"
-                             "tireMarkerFrontRight",
-                             "tireMarkerFrontLeft",
-                             "tireMarkerRearLeft",
-                             "tireMarkerRearRight",
-                             "tireWarningRollup",
-                             "lastTirepressureTimestamp"
-                         }]
+
+    'warningenginelight': ['Engine Light Warning', None, 'binarysensors', 'warningenginelight', 'value', None, {
+        'warningbrakefluid',
+        'warningwashwater',
+        'warningcoolantlevellow',
+        'warninglowbattery'
+    }],
+    
+    'parkbrakestatus': ['Park Brake Status', None, 'binarysensors', 'parkbrakestatus', 'value', None, {
+        'preWarningBrakeLiningWear'
+    }],
+    'windowsClosed': ['Windows Closed', None, 'windows',
+                              'windowsClosed', 'value', None, { 
+                                "windowstatusrearleft",
+                                "windowstatusrearright",
+                                "windowstatusfrontright",
+                                "windowstatusfrontleft",}],
+    'tirewarninglamp': ['Tire Warning', None, 'tires',
+                              'tirewarninglamp', 'value', None, { 
+                                "tirepressureRearLeft",
+                                "tirepressureRearRight",
+                                "tirepressureFrontRight",
+                                "tirepressureFrontLeft",
+                                "tirewarningsrdk",
+                                "tirewarningsprw"
+                                "tireMarkerFrontRight",
+                                "tireMarkerFrontLeft",
+                                "tireMarkerRearLeft",
+                                "tireMarkerRearRight",
+                                "tireWarningRollup",
+                                "lastTirepressureTimestamp"}]
 }
 
+ODOMETER_OPTIONS = ["odo",
+                    "distanceReset",
+                    "distanceStart",
+                    "averageSpeedReset",
+                    "averageSpeedStart",
+                    "distanceZEReset",
+                    "drivenTimeZEReset",
+                    "drivenTimeReset",
+                    "drivenTimeStart",
+                    "ecoscoretotal",
+                    "ecoscorefreewhl",
+                    "ecoscorebonusrange",
+                    "ecoscoreconst",
+                    "ecoscoreaccel",
+                    "gasconsumptionstart",
+                    "gasconsumptionreset",
+                    "gasTankRange",
+                    "gasTankLevel",
+                    "liquidconsumptionstart",
+                    "liquidconsumptionreset",
+                    "liquidRangeSkipIndication",
+                    "rangeliquid",
+                    "serviceintervaldays",
+                    "tanklevelpercent",
+                    "tankReserveLamp"]
+
 LOCKS = {
-    'lock': ['Lock', None, 'doors', 'locked', 'value', 'remote_door_lock'],
+    'lock': ['Lock', None, "doors", 'locked', 'value', 'remote_door_lock'],
 }
 
 SWITCHES = {
-    'aux_heat': ['AUX HEAT', None,
-                 'auxheat', 'auxheatActive', 'value', 'aux_heat'],
+    'aux_heat': ['AUX HEAT', None, "auxheat", 'auxheatActive', 'value', 'aux_heat'],
 }
 
 SENSORS = {
     'lock': ['Lock', None, "doors", 'locked', 'value', None, {
-        'doorStateFrontLeft',
-        'doorStateFrontRight',
-        'doorStateRearLeft',
-        'doorStateRearRight',
-        'frontLeftDoorLocked',
-        'frontRightDoorLocked',
-        'rearLeftDoorLocked',
-        'rearRightDoorLocked',
-        'frontLeftDoorClosed',
-        'frontRightDoorClosed',
-        'rearLeftDoorClosed',
-        'rearRightDoorClosed',
-        'rearRightDoorClosed',
-        'doorsClosed',
-        'trunkStateRollup',
-        'sunroofstatus',
+                    'doorStateFrontLeft',
+                    'doorStateFrontRight', 
+                    'doorStateRearLeft', 
+                    'doorStateRearRight', 
+                    'frontLeftDoorLocked', 
+                    'frontRightDoorLocked', 
+                    'rearLeftDoorLocked', 
+                    'rearRightDoorLocked',
+                    'frontLeftDoorClosed', 
+                    'frontRightDoorClosed', 
+                    'rearLeftDoorClosed', 
+                    'rearRightDoorClosed', 
+                    'rearRightDoorClosed', 
+                    'doorsClosed',
+                    'trunkStateRollup',
+                    'sunroofstatus',
     }],
-    'rangeElectricKm' : ['Range electric', 'Km', "electric", 
-                         'rangeElectricKm', 'value', 'charging_clima_control', 
-                         {'rangeelectric',
-                          'rangeElectricKm',
-                          'criticalStateOfSoc',
-                          'maxrange',
-                          'stateOfChargeElectricPercent',
-                          'endofchargetime',
-                          'criticalStateOfDeparturetimesoc',
-                          'warninglowbattery',
-                          'electricconsumptionreset',
-                          'maxStateOfChargeElectricPercent',
-                          'supplybatteryvoltage',
-                          'electricChargingStatus',
-                          'chargingstatus',
-                          'soc',
-                          'showChargingErrorAndDemand',
-                          'electricconsumptionstart'}],
+    'rangeElectricKm' : ['Range electric', 'Km', "electric", 'rangeElectricKm', 'value', 'charging_clima_control', {
+                    'rangeelectric',
+                    'rangeElectricKm',
+                    'criticalStateOfSoc',
+                    'maxrange',
+                    'stateOfChargeElectricPercent',
+                    'endofchargetime',
+                    'criticalStateOfDeparturetimesoc',
+                    'warninglowbattery',
+                    'electricconsumptionreset',
+                    'maxStateOfChargeElectricPercent',
+                    'supplybatteryvoltage',
+                    'electricChargingStatus',
+                    'chargingstatus',
+                    'soc',
+                    'showChargingErrorAndDemand',
+                    'electricconsumptionstart'}],
 
     'auxheatstatus': ['auxheat status', None, "auxheat", 'auxheatstatus', 'value', 'aux_heat', {
                     'auxheatActive',
@@ -124,32 +145,30 @@ SENSORS = {
                     'auxheattime3'
     }],
     'tanklevelpercent': ['Fuel Level', '%', "odometer", 'tanklevelpercent', 'value', None, None],
-    'odometer': ['Odometer', 'Km', 'odometer', 'odo', 'value', None, 
-                 {
-                     "distanceReset",
-                     "distanceStart",
-                     "averageSpeedReset",
-                     "averageSpeedStart",
-                     "distanceZEReset",
-                     "drivenTimeZEReset",
-                     "drivenTimeReset",
-                     "drivenTimeStart",
-                     "ecoscoretotal",
-                     "ecoscorefreewhl",
-                     "ecoscorebonusrange",
-                     "ecoscoreconst",
-                     "ecoscoreaccel",
-                     "gasconsumptionstart",
-                     "gasconsumptionreset",
-                     "gasTankRange",
-                     "gasTankLevel",
-                     "liquidconsumptionstart",
-                     "liquidconsumptionreset",
-                     "liquidRangeSkipIndication",
-                     "rangeliquid",
-                     "serviceintervaldays",
-                     "tanklevelpercent",
-                     "tankReserveLamp"}]
+    'odometer': ['Odometer', 'Km', 'odometer', 'odo', 'value', None, {"distanceReset",
+                    "distanceStart",
+                    "averageSpeedReset",
+                    "averageSpeedStart",
+                    "distanceZEReset",
+                    "drivenTimeZEReset",
+                    "drivenTimeReset",
+                    "drivenTimeStart",
+                    "ecoscoretotal",
+                    "ecoscorefreewhl",
+                    "ecoscorebonusrange",
+                    "ecoscoreconst",
+                    "ecoscoreaccel",
+                    "gasconsumptionstart",
+                    "gasconsumptionreset",
+                    "gasTankRange",
+                    "gasTankLevel",
+                    "liquidconsumptionstart",
+                    "liquidconsumptionreset",
+                    "liquidRangeSkipIndication",
+                    "rangeliquid",
+                    "serviceintervaldays",
+                    "tanklevelpercent",
+                    "tankReserveLamp"}],
 }
 
 
@@ -192,7 +211,7 @@ CONFIG_SCHEMA = vol.Schema({
 def setup(hass, config):
     """Set up MercedesMe System."""
 
-    from custom_components.mercedesmeapi.OAuth import MercedesMeOAuth
+    from custom_components.mercedesmeapi.oauth import MercedesMeOAuth
     from custom_components.mercedesmeapi.apicontroller import Controller
 
     conf = config[DOMAIN]
@@ -294,10 +313,10 @@ class MercedesMeEntity(Entity):
         self._car = next(
             car for car in self._data.cars if car.finorvin == self._vin)
 
-        self._state = self.get_car_value(self._feature_name,
-                                         self._object_name,
-                                         self._attrib_name,
-                                         'error')
+        self._state = self.get_car_value(self._feature_name, 
+                                    self._object_name, 
+                                    self._attrib_name,
+                                    'error')
         
         _LOGGER.debug("Updated %s %s", self._internal_name, self._state)
 
@@ -307,14 +326,15 @@ class MercedesMeEntity(Entity):
         if object_name:
             if not feature:
                 value = getattr(
-                            getattr(self._car, object_name, default_value),
-                            attrib_name, default_value)
+                                getattr(self._car, object_name, default_value), 
+                                attrib_name, default_value)
             else:
                 value = getattr(
                             getattr(
-                                getattr(self._car, feature, default_value),
+                                getattr(self._car, feature, default_value), 
                                 object_name, default_value),
                             attrib_name, default_value)
+                
         else:
             value = getattr(self._car, attrib_name, default_value)
 
@@ -326,22 +346,18 @@ class MercedesMeEntity(Entity):
 
         state = {
             "car": self._licenseplate,
-            "retrievalstatus": self.get_car_value(self._feature_name,
-                                                  self._object_name,
-                                                  'retrievalstatus',
-                                                  'error')
+            "retrievalstatus": self.get_car_value(self._feature_name, 
+                                             self._object_name, 
+                                             'retrievalstatus',
+                                             'error')
         }
         if self._extended_attributes is not None:
             for attrib in self._extended_attributes:
-                ret_status = self.get_car_value(self._feature_name,
-                                                attrib,
-                                                'retrievalstatus',
-                                                'error')
-                if  ret_status == 'VALID':
+                if self.get_car_value(self._feature_name, attrib, 'retrievalstatus','error') == 'VALID':
                     state[attrib] = self.get_car_value(self._feature_name, 
-                                                       attrib,
-                                                       'value',
-                                                       'error')
+                                                attrib, 
+                                                'value',
+                                                'error')
         return state
 
     @property
