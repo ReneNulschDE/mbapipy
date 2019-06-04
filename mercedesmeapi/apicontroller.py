@@ -378,6 +378,8 @@ class Controller(object):
 
             api_result = self._retrieve_car_details(car.finorvin).get("dynamic")
 
+            # car.salesdesignation = detail.get("salesDesignation")
+
             car.odometer = self._get_car_values(api_result, car.finorvin, Odometer(), ODOMETER_OPTIONS)
             car.tires = self._get_car_values(api_result, car.finorvin, Tires(), TIRE_OPTIONS)
             car.doors = self._get_car_values(api_result, car.finorvin, Doors(), DOOR_OPTIONS)
@@ -468,124 +470,6 @@ class Controller(object):
         
         return car_features
 
-    def _get_initial_tokens(self, username, password):
-        session = requests.session()
-        code_verifier = self._random_string(64)
-        code_challenge = self._generate_code_challenge(code_verifier)
-
-        #Start Login Session - Step 1 call API - Result is 302 redirect to html form
-        url_step1 = "{0}/oidc10/auth/oauth/v2/authorize".format(URL_API)
-        url_step1 += "?response_type=code&"
-        url_step1 += "client_id={0}&".format(CLIENT_ID)
-        url_step1 += "code_challenge={0}&".format(code_challenge)
-        url_step1 += "code_challenge_method=S256&"
-        url_step1 += "scope=mma:backend:all openid ciam-uid profile email&"
-        url_step1 += "redirect_uri={0}".format(AUTH_REDIR_URL)
-
-        mb_headers = {'Accept-Language': 'en-US',
-                      'X-Requested-With': 'com.daimler.mm.android',
-                      'Accept': '*/*',
-                      'User-Agent': ANDROID_USER_AGENT
-                      }
-
-        session.proxies.update({'https': 'http://localhost:8866' })
-
-        # First we get a 302 redirect to the login server
-        login_page = session.get(url_step1, verify=LOGIN_VERIFY_SSL_CERT, headers=mb_headers)
-
-        # Side Step 1.5 - collect additional cookies
-        # /wl/third-party-cookie?app-id=MCMAPP.FE_PROD
-        # Caution with debug breakpoints here, the cookie life time out of step 1 is short
-        sidestep_url = '{0}/wl/third-party-cookie?app-id={1}'.format(URL_LOGIN, API_ID)
-        session.get(sidestep_url, verify=LOGIN_VERIFY_SSL_CERT)
-
-        # Get the hidden elements and put them in our form.
-        login_html = lxml.html.fromstring(login_page.text)
-        hidden_elements = login_html.xpath('//form//input')
-        form = {x.attrib['name']: x.attrib['value'] for x in hidden_elements}
-
-        # "Fill out" the form.
-        form['username'] = username
-        form['password'] = password
-
-
-        mb_headers = {
-            'Accept-Language': 'en-US',
-            'X-Requested-With': 'com.daimler.mm.android',
-            'Accept': '*/*',
-            'User-Agent': ANDROID_USER_AGENT,
-            'Referer': login_page.url,
-            'Origin' : URL_LOGIN,
-            'Cache-Control': 'max-age=0',
-            'Content-Type': 'application/x-www-form-urlencoded'
-            }
-
-        step_2_url = 'https://login.secure.mercedes-benz.com/wl/login'
-
-        step_2_result = session.post(step_2_url,
-                                     data=form,
-                                     verify=LOGIN_VERIFY_SSL_CERT,
-                                     headers=mb_headers
-                                    )
-
-        # Result should be a Webpage with a form, Javascript auto post the form
-        # We rebuild the auto post process in Step 3
-
-        # Get the hidden elements and put them in our form.s
-        step_2_html = lxml.html.fromstring(step_2_result.text)
-        step_3_elements = step_2_html.xpath('//form//input')
-        step_3_form = {x.attrib['name']: x.attrib['value'] for x in step_3_elements}
-        step_3_url = "{0}/oidc10/auth/oauth/v2/authorize/consent".format(URL_API)
-
-        mb_headers = {
-            'Accept-Language': 'en-US', 
-            'Accept': '*/*', 
-            'Cache-Control': 'max-age=0',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Origin' : URL_LOGIN,
-            'Referer': step_2_result.url,
-            'User-Agent': ANDROID_USER_AGENT,
-            'X-Requested-With': 'com.daimler.mm.android'
-            }
-
-        # The expected result is a redirect to AUTH_REDIR_URL, 
-        # we do not want the redirect, 
-        # we are interesseted in the OAuth code only
-        # therefore we set allow_redirect to false
-        step_3_result = session.post(step_3_url,
-                                     data=step_3_form,
-                                     verify=LOGIN_VERIFY_SSL_CERT,
-                                     headers=mb_headers,
-                                     allow_redirects=False)
-
-        if step_3_result.status_code == 302:
-            location = urlparse(step_3_result.headers['Location'])
-            code = parse_qs(location.query).get("code")
-
-        print(code)
-
-        # Step 4 - Time to get the bearer token :-)
-        step_4_url = '{0}/oidc10/auth/oauth/v2/token?'.format(URL_API)
-        step_4_url += 'grant_type=authorization_code&'
-        step_4_url += 'redirect_uri={0}&'.format(AUTH_REDIR_URL)
-        step_4_url += 'client_id={0}&'.format(CLIENT_ID)
-        step_4_url += 'code_verifier={0}&'.format(code_verifier.rstrip('='))
-        step_4_url += 'code={0}'.format(code[0])
-
-        mb_headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'User-Agent': 'okhttp/3.9.0',
-            }
-
-
-        step_4_result = session.post(step_4_url, 
-                                     verify=LOGIN_VERIFY_SSL_CERT, 
-                                     headers=mb_headers,
-                                     allow_redirects=False,
-                                     cookies=None)
-
-        print(step_4_result.text)
-
     def _retrieve_car_details(self, fin):
         me_status_header = {
             "Accept-Language": self.accept_lang,
@@ -652,14 +536,3 @@ class Controller(object):
 
     def _get_bearer_token(self):
         return "Bearer {}".format(self.auth_handler.token_info["access_token"])
-
-    def _random_string(self, length=64):
-        """Generate a random string of fixed length """
-        return str(base64.urlsafe_b64encode(urandom(length)), 
-                   "utf-8").rstrip('=')
-
-    def _generate_code_challenge(self, code):
-        """Generate a hash of the given string """
-        m = hashlib.sha256()
-        m.update(code.encode("utf-8"))
-        return str(base64.urlsafe_b64encode(m.digest()), "utf-8").rstrip('=')
