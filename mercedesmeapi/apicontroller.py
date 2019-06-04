@@ -378,8 +378,6 @@ class Controller(object):
 
             api_result = self._retrieve_car_details(car.finorvin).get("dynamic")
 
-            # car.salesdesignation = detail.get("salesDesignation")
-
             car.odometer = self._get_car_values(api_result, car.finorvin, Odometer(), ODOMETER_OPTIONS)
             car.tires = self._get_car_values(api_result, car.finorvin, Tires(), TIRE_OPTIONS)
             car.doors = self._get_car_values(api_result, car.finorvin, Doors(), DOOR_OPTIONS)
