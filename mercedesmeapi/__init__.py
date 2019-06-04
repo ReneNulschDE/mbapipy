@@ -220,8 +220,6 @@ def setup(hass, config):
 
     cache = hass.config.path(DEFAULT_CACHE_PATH)
 
-    _LOGGER.info(cache)
-
     auth_handler = MercedesMeOAuth(conf.get(CONF_USERNAME),
                                    conf.get(CONF_PASSWORD),
                                    conf.get(CONF_ACCEPT_LANG),
@@ -244,7 +242,8 @@ def setup(hass, config):
                                 conf.get(CONF_ACCEPT_LANG),
                                 conf.get(CONF_COUNTRY_CODE),
                                 conf.get(CONF_EXCLUDED_CARS),
-                                conf.get(CONF_SAVE_CAR_DETAILS))
+                                conf.get(CONF_SAVE_CAR_DETAILS),
+                                hass.config.path(''))
 
     hass.data[DATA_MME] = MercedesMeHub(mercedesme_api)
 

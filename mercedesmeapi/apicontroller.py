@@ -25,8 +25,6 @@ import lxml.html
 
 _LOGGER = logging.getLogger(__name__)
 
-URL_LOGIN = "https://login.secure.mercedes-benz.com"
-URL_API = "https://api.secure.mercedes-benz.com"
 URL_VHS_API = "https://vhs.meapp.secure.mercedes-benz.com"
 URL_USR_API = "https://bff.meapp.secure.mercedes-benz.com"
 
@@ -37,19 +35,12 @@ AUTH_REDIR_URL = "https://cgw.meapp.secure.mercedes-benz.com/endpoint/api/v1/red
 ME_STATUS_URL = "{0}/api/v2/appdata".format(URL_USR_API)
 CAR_STATUS_URL = "{0}/api/v1/vehicles/%s/dynamic?forceRefresh=true".format(URL_VHS_API)
 CAR_LOCAT_URL = "{0}/api/v1/vehicles/%s/location".format(URL_VHS_API)
-CAR_DETAIL_URL = "{0}/backend/vehicles/%s/converant".format(URL_VHS_API)
 CAR_LOCK_URL = "{0}/api/v1/vehicles/%s/doors/lock".format(URL_VHS_API)
 CAR_UNLOCK_URL = "{0}/api/v1/vehicles/%s/doors/unlock".format(URL_VHS_API)
 CAR_HEAT_ON_URL = "{0}/api/v1/vehicles/%s/auxheat/start".format(URL_VHS_API)
 CAR_HEAT_OFF_URL = "{0}/api/v1/vehicles/%s/auxheat/stop".format(URL_VHS_API)
 CAR_FEATURE_URL = "{0}/api/v2/dashboarddata/%s/vehicle".format(URL_USR_API)
 
-CONTENT_TYPE_JSON = "application/json;charset=UTF-8"
-
-ANDROID_USER_AGENT = 'Mozilla/5.0 (Linux; Android 5.1; ' \
-                        'Google Nexus 5 Build/LMY47D) AppleWebKit/537.36 ' \
-                        '(KHTML, like Gecko) Version/4.0 ' \
-                        'Chrome/39.0.0.0 Mobile Safari/537.36'
 APP_USER_AGENT = "MercedesMe/2.13.2+639 (Android 5.1)"
 
 ODOMETER_OPTIONS = ["odo",
@@ -263,7 +254,7 @@ class Controller(object):
     """ Simple Mercedes me API.
     """
     def __init__(self, auth_handler, update_interval, accept_lang, country_code,
-                 excluded_cars, save_car_details):
+                 excluded_cars, save_car_details, save_path):
 
         self.__lock = RLock()
         self.accept_lang = accept_lang
@@ -275,6 +266,7 @@ class Controller(object):
         self.is_valid_session = False
         self.last_update_time = 0
         self.save_car_details = save_car_details
+        self.save_path = save_path
         self.session = requests.session()
         
         _LOGGER.debug("Controller init complete. Start _get_cars")
@@ -460,7 +452,7 @@ class Controller(object):
         car_features = Features()
 
         if self.save_car_details:
-            with open('{0}/feat_{1}.json'.format('/config',car_id), 'w') as outfile:
+            with open('{0}feat_{1}.json'.format(self.save_path,car_id), 'w') as outfile:
                 json.dump(features, outfile)
 
         for feature in features.get("metadata").get("featureEnablements"):
@@ -481,7 +473,7 @@ class Controller(object):
         result = self._retrieve_json_at_url(CAR_STATUS_URL % fin, me_status_header, "get")
         
         if self.save_car_details:
-            with open('{0}/state_{1}.json'.format('/config',fin), 'w') as outfile:
+            with open('{0}state_{1}.json'.format(self.save_path,fin), 'w') as outfile:
                 json.dump(result, outfile)
 
         return result
