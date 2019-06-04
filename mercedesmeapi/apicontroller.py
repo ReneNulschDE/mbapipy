@@ -28,67 +28,143 @@ _LOGGER = logging.getLogger(__name__)
 URL_LOGIN = "https://login.secure.mercedes-benz.com"
 URL_API = "https://api.secure.mercedes-benz.com"
 URL_VHS_API = "https://vhs.meapp.secure.mercedes-benz.com"
-URL_USR_API = "https://usr.meapp.secure.mercedes-benz.com"
+URL_USR_API = "https://bff.meapp.secure.mercedes-benz.com"
 
 CLIENT_ID = "4390b0db-4be9-40e9-9147-5845df537beb"
 API_ID = "MCMAPP.FE_PROD"
 AUTH_REDIR_URL = "https://cgw.meapp.secure.mercedes-benz.com/endpoint/api/v1/redirect"
 
-API_VEHICLES = "backend/vehicles"
-ME_STATUS_URL = "{0}/backend/users/identity".format(URL_API)
-CAR_STATUS_URL = "{0}/backend/vehicles/%s/status".format(URL_API)
-CAR_DETAIL_URL = "{0}/backend/vehicles/%s/converant".format(URL_API)
+ME_STATUS_URL = "{0}/api/v2/appdata".format(URL_USR_API)
+CAR_STATUS_URL = "{0}/api/v1/vehicles/%s/dynamic?forceRefresh=true".format(URL_VHS_API)
+CAR_LOCAT_URL = "{0}/api/v1/vehicles/%s/location".format(URL_VHS_API)
+CAR_DETAIL_URL = "{0}/backend/vehicles/%s/converant".format(URL_VHS_API)
+CAR_LOCK_URL = "{0}/api/v1/vehicles/%s/doors/lock".format(URL_VHS_API)
+CAR_UNLOCK_URL = "{0}/api/v1/vehicles/%s/doors/unlock".format(URL_VHS_API)
+CAR_HEAT_ON_URL = "{0}/api/v1/vehicles/%s/auxheat/start".format(URL_VHS_API)
+CAR_HEAT_OFF_URL = "{0}/api/v1/vehicles/%s/auxheat/stop".format(URL_VHS_API)
+CAR_FEATURE_URL = "{0}/api/v2/dashboarddata/%s/vehicle".format(URL_USR_API)
 
 CONTENT_TYPE_JSON = "application/json;charset=UTF-8"
 
+ANDROID_USER_AGENT = 'Mozilla/5.0 (Linux; Android 5.1; ' \
+                        'Google Nexus 5 Build/LMY47D) AppleWebKit/537.36 ' \
+                        '(KHTML, like Gecko) Version/4.0 ' \
+                        'Chrome/39.0.0.0 Mobile Safari/537.36'
+APP_USER_AGENT = "MercedesMe/2.13.2+639 (Android 5.1)"
 
 ODOMETER_OPTIONS = ["odo",
                     "distanceReset",
-                    "distanceStart",]
+                    "distanceStart",
+                    "averageSpeedReset",
+                    "averageSpeedStart",
+                    "distanceZEReset",
+                    "drivenTimeZEReset",
+                    "drivenTimeReset",
+                    "drivenTimeStart",
+                    "ecoscoretotal",
+                    "ecoscorefreewhl",
+                    "ecoscorebonusrange",
+                    "ecoscoreconst",
+                    "ecoscoreaccel",
+                    "gasconsumptionstart",
+                    "gasconsumptionreset",
+                    "gasTankRange",
+                    "gasTankLevel",
+                    "liquidconsumptionstart",
+                    "liquidconsumptionreset",
+                    "liquidRangeSkipIndication",
+                    "rangeliquid",
+                    "serviceintervaldays",
+                    "tanklevelpercent",
+                    "tankReserveLamp"]
 
-LOCATION_OPTIONS = ["positionLat",
-                    "positionLong",
-                    "positionHeading"]
+LOCATION_OPTIONS = ["latitude",
+                    "longitude",
+                    "heading"]
 
 TIRE_OPTIONS = ["tirepressureRearLeft",
                 "tirepressureRearRight",
                 "tirepressureFrontRight",
-                "tirepressureFrontLeft"]
+                "tirepressureFrontLeft",
+                "tirewarninglamp",
+                "tirewarningsrdk",
+                "tirewarningsprw"
+                "tireMarkerFrontRight",
+                "tireMarkerFrontLeft",
+                "tireMarkerRearLeft",
+                "tireMarkerRearRight",
+                "tireWarningRollup",
+                "lastTirepressureTimestamp"]
 
 WINDOW_OPTIONS = ["windowstatusrearleft",
                   "windowstatusrearright",
                   "windowstatusfrontright",
-                  "windowstatusfrontleft"]
+                  "windowstatusfrontleft",
+                  'windowsClosed']
 
-DOOR_OPTIONS = ["doorstatusrearleft",
-                "doorstatusrearright",
-                "doorstatusfrontright",
-                "doorstatusfrontleft",
-                "doorlockstatusrearleft",
-                "doorlockstatusrearright",
-                "doorlockstatusfrontright",
-                "doorlockstatusfrontleft",
-                "doorlockstatusdecklid",
-                "doorlockstatusvehicle",
-                "doorlockstatusgas"]
+DOOR_OPTIONS = [
+    'doorStateFrontLeft',
+    'doorStateFrontRight', 
+    'doorStateRearLeft', 
+    'doorStateRearRight', 
+    'frontLeftDoorLocked', 
+    'frontRightDoorLocked', 
+    'rearLeftDoorLocked', 
+    'rearRightDoorLocked',
+    'frontLeftDoorClosed', 
+    'frontRightDoorClosed', 
+    'rearLeftDoorClosed', 
+    'rearRightDoorClosed', 
+    'rearRightDoorClosed', 
+    'doorsClosed',
+    'trunkStateRollup',
+    'sunroofstatus',
+    'locked']
 
-ELECTRIC_OPTIONS = ["distanceElectricalStart",
-                    "electricalRangeSkipIndication",
-                    "electricconsumptionstart",
-                    "electricconsumptionreset",
-                    "distanceElectricalReset"]
+ELECTRIC_OPTIONS = [
+    'rangeelectric',
+    'rangeElectricKm',
+    'criticalStateOfSoc',
+    'maxrange',
+    'stateOfChargeElectricPercent',
+    'endofchargetime',
+    'criticalStateOfDeparturetimesoc',
+    'warninglowbattery',
+    'electricconsumptionreset',
+    'maxStateOfChargeElectricPercent',
+    'supplybatteryvoltage',
+    'electricChargingStatus',
+    'chargingstatus',
+    'soc',
+    'showChargingErrorAndDemand',
+    'electricconsumptionstart']
 
-BINARY_SENSOR_OPTIONS = ["warningwashwater",
-                         "decklidstatus",
-                         "warningenginelight",
-                         "warningbrakefluid",
-                         "parkbrakestatus"]
 
-DEBUG_MODE = False
+
+BINARY_SENSOR_OPTIONS = [
+    'warningwashwater',
+    'warningenginelight',
+    'warningbrakefluid',
+    'warningcoolantlevellow',
+    'parkbrakestatus',
+    'readingLampFrontRight',
+    'readingLampFrontLeft',
+    'preWarningBrakeLiningWear']
+
+AUX_HEAT_OPTIONS = [
+    'auxheatActive',
+    'auxheatwarnings',
+    'auxheatruntime',
+    'auxheatstatus',
+    'auxheatwarningsPush',
+    'auxheattimeselection',
+    'auxheattime1',
+    'auxheattime2',
+    'auxheattime3']
 
 # Set to False for testing with tools like fiddler
 # Change to True for production
-LOGIN_VERIFY_SSL_CERT = False
+LOGIN_VERIFY_SSL_CERT = True
 
 
 class Car(object):
@@ -104,19 +180,17 @@ class Car(object):
         self.powerkw = None
         self.numberofdoors = None
         self.numberofseats = None
+
+        self.vehicleHealthStatus = None
         self.binarysensors = None
-        self.tanklevelpercent = None
-        self.liquidconsumptionstart = None
-        self.liquidconsumptionreset = None
-        self.rangeliquid = None
         self.tires = None
         self.odometer = None
-        self.fuellevelpercent = None
         self.doors = None
         self.stateofcharge = None
         self.location = None
         self.windows = None
-        self.doors = None
+        self.features = None
+        self.auxheat = None
 
 class StateOfObject(object):
     def __init__(self, unit=None, value=None, retrievalstatus=None, timestamp=None):
@@ -134,58 +208,41 @@ class StateOfObject(object):
         if timestamp is not None:
             self.timestamp = timestamp
 
-class Odometer(object):
-    def __init__(self):
-        self.odo = None
-        self.distanceReset = None
-        self.distanceStart = None
-
 class Tires(object):
     def __init__(self):
-        self.tirepressurefrontleft = None
-        self.tirepressurefrontright = None
-        self.tirepressurerearleft = None
-        self.tirepressurerearright = None
+        self.name = "Tires"
+
+class Odometer(object):
+    def __init__(self):
+        self.name = "Odometer"
+
+class Features(object):
+    def __init__(self):
+        self.name = "Features"
 
 class Windows(object):
     def __init__(self):
-        self.windowstatusfrontleft = None
-        self.windowstatusfrontright = None
-        self.windowstatusrearleft = None
-        self.windowstatusrearright = None
+        self.name = "Windows"
 
 class Doors(object):
     def __init__(self):
-        self.doorstatusfrontleft = None
-        self.doorstatusfrontright = None
-        self.doorstatusrearleft = None
-        self.doorstatusrearright = None
-        self.doorlockstatusfrontleft = None
-        self.doorlockstatusfrontright = None
-        self.doorlockstatusrearleft = None
-        self.doorlockstatusrearright = None
-        self.doorlockstatusdecklid = None
-        self.doorlockstatusgas = None
-        self.doorlockstatusvehicle = None
+        self.name = "Features"
 
 class Electric(object):
     def __init__(self):
-        self.distanceelectricalstart = None
-        self.electricalrangeskipindication = None
-        self.electricconcumptionstart = None
-        self.electricconsumptionreset = None
-        self.distanceelectricalreset = None
+        self.name = "Electric"
+
+class Auxheat(object):
+    def __init__(self):
+        self.name = "Auxheat"
 
 class Binary_Sensors(object):
     def __init__(self):
-        self.warningwashwater = None
-        self.decklidstatus = None
-        self.warningenginelight = None
-        self.warningbrakefluid = None
-        self.parkbrakestatus = None
+        self.name = "Binary_Sensors"
 
 class Location(object):
     def __init__(self, latitude=None, longitude=None, heading=None):
+        self.name = "Location"
         self.latitude = None
         self.longitude = None
         self.heading = None
@@ -205,223 +262,153 @@ class CarAttribute(object):
 class Controller(object):
     """ Simple Mercedes me API.
     """
-    def __init__(self, auth_handler, update_interval):
+    def __init__(self, auth_handler, update_interval, accept_lang, country_code,
+                 excluded_cars, save_car_details):
 
         self.__lock = RLock()
+        self.accept_lang = accept_lang
+        self.country_code = country_code
+        self.auth_handler = auth_handler
         self.cars = []
         self.update_interval = update_interval
+        self.excluded_cars = excluded_cars
         self.is_valid_session = False
         self.last_update_time = 0
-
+        self.save_car_details = save_car_details
         self.session = requests.session()
-        # login
-        self.session_refreshing = False
+        
+        _LOGGER.debug("Controller init complete. Start _get_cars")
         self._get_cars()
 
-
     def update(self):
-        """ Simple Mercedes me API."""
-        _LOGGER.info("Update start")
+        _LOGGER.debug("Update start")
         self._update_cars()
+
+    def lock(self, car_id):
+        _LOGGER.debug("lock for %s called", car_id)
+        me_status_header = {
+            "Accept-Language": self.accept_lang,
+            "Authorization": "Bearer {}".format(self.auth_handler.token_info["access_token"]),
+            "country_code": "DE",
+            "User-Agent": APP_USER_AGENT
+            }
+        _LOGGER.debug(self._retrieve_json_at_url(CAR_LOCK_URL % car_id, me_status_header, "post"))
+        return True
+    
+    def unlock(self, car_id, pin):
+        _LOGGER.debug("unlock for %s called", car_id)
+        me_status_header = {
+            "Accept-Language": self.accept_lang,
+            "Authorization": "Bearer {}".format(self.auth_handler.token_info["access_token"]),
+            "country_code": "DE",
+            "User-Agent": "MercedesMe/2.13.2+639 (Android 5.1)",
+            "x-pin": pin
+            }
+        _LOGGER.debug(self._retrieve_json_at_url(CAR_UNLOCK_URL % car_id, me_status_header, "post"))
+        return True
+
+    def heater_on(self, car_id):
+        _LOGGER.debug("lock for %s called", car_id)
+        me_status_header = {
+            "Accept-Language": self.accept_lang,
+            "Authorization": "Bearer {}".format(self.auth_handler.token_info["access_token"]),
+            "country_code": "DE",
+            "User-Agent": APP_USER_AGENT
+            }
+        _LOGGER.debug(self._retrieve_json_at_url(CAR_HEAT_ON_URL % car_id, me_status_header, "post"))
+        return True
+
+    def heater_off(self, car_id):
+        _LOGGER.debug("lock for %s called", car_id)
+        me_status_header = {
+            "Accept-Language": self.accept_lang,
+            "Authorization": "Bearer {}".format(self.auth_handler.token_info["access_token"]),
+            "country_code": "DE",
+            "User-Agent": APP_USER_AGENT
+            }
+        _LOGGER.debug(self._retrieve_json_at_url(CAR_HEAT_OFF_URL % car_id, me_status_header, "post"))
+        return True
 
     def _update_cars(self):
         cur_time = time.time()
         with self.__lock:
+            if self.auth_handler.is_token_expired(self.auth_handler.token_info):
+                self.auth_handler.refresh_access_token(self.auth_handler.token_info['refresh_token'])
             if cur_time - self.last_update_time > self.update_interval:
                 for car in self.cars:
-                    # session_check
-                    self._retrieve_api_result(car.finorvin, "status")
 
-                    api_result = self._retrieve_api_result(
-                        car.finorvin,
-                        "status").get("data")
-                    car.binarysensors = self._get_binary_sensors(
-                        api_result, car.finorvin)
+                    api_result = self._retrieve_car_details(car.finorvin).get("dynamic")
 
-                    car.tanklevelpercent = self._get_car_attribute(
-                        api_result,
-                        "tanklevelpercent")
-                    car.liquidconsumptionstart = self._get_car_attribute(
-                        api_result,
-                        "liquidconsumptionstart")
-                    car.liquidconsumptionreset = self._get_car_attribute(
-                        api_result,
-                        "liquidconsumptionreset")
-                    car.rangeliquid = self._get_car_attribute(
-                        api_result,
-                        "rangeliquid")
-
-                    car.odometer = self.get_odometer(api_result, car.finorvin)
-                    car.tires = self.get_tires(api_result, car.finorvin)
-                    car.windows = self.get_windows(api_result, car.finorvin)
-                    car.doors = self.get_doors(api_result, car.finorvin)
-                    car.location = self.get_location(car.finorvin)
-                    car.electric = self.get_electric(api_result, car.finorvin)
+                    car.odometer = self._get_car_values(api_result, car.finorvin, Odometer(), ODOMETER_OPTIONS)
+                    car.tires = self._get_car_values(api_result, car.finorvin, Tires(), TIRE_OPTIONS)
+                    car.doors = self._get_car_values(api_result, car.finorvin, Doors(), DOOR_OPTIONS)
+                    car.location = self._get_location(car.finorvin)
+                    car.binarysensors = self._get_car_values(api_result, car.finorvin, Binary_Sensors(), BINARY_SENSOR_OPTIONS)
+                    car.windows = self._get_car_values(api_result, car.finorvin, Windows(), WINDOW_OPTIONS)
+                    if car.features.charging_clima_control:
+                        car.electric = self._get_car_values(api_result, car.finorvin, Electric(), ELECTRIC_OPTIONS)
+                    if car.features.aux_heat:
+                        car.auxheat = self._get_car_values(api_result, car.finorvin, Auxheat(), AUX_HEAT_OPTIONS)
 
                 self.last_update_time = time.time()
 
     def _get_cars(self):
-        cur_time = time.time()
-        with self.__lock:
-            if cur_time - self.last_update_time > self.update_interval:
-                response = self.session.get(ME_STATUS_URL,
-                                            verify=LOGIN_VERIFY_SSL_CERT)
 
-                #if response.headers["Content-Type"] == CONTENT_TYPE_JSON:
-                cars = json.loads(
-                    response.content.decode('utf8'))['vehicles']
+        me_status_header = {
+            "Accept-Language": self.accept_lang,
+            "Authorization": "Bearer {}".format(self.auth_handler.token_info["access_token"])
+        }
+        response = self.session.get(ME_STATUS_URL, headers=me_status_header,
+                                    verify=LOGIN_VERIFY_SSL_CERT)
 
-                for c in cars:
-                    car = Car()
-                    car.finorvin = c.get("vin")
-                    car.licenseplate = c.get("licenceplate")
-                    response = self.session.get(CAR_DETAIL_URL % car.finorvin,
-                                                verify=LOGIN_VERIFY_SSL_CERT)
+        _LOGGER.debug("Me_status_response: %s", response.text)
+        
+        cars = json.loads(
+            response.content.decode('utf8'))['vehicles']
 
-                    _LOGGER.debug(response.text)
+        for c in cars:
+            
+            if c.get("fin") in self.excluded_cars:
+                continue
 
-                    detail = json.loads(response.content.decode('utf8'))
+            car = Car()
+            car.finorvin = c.get("fin")
+            car.licenseplate = c.get("licensePlate")
+            car.features = self._get_car_features(car.finorvin)
 
-                    car.salesdesignation = detail.get("salesDesignation")
+            api_result = self._retrieve_car_details(car.finorvin).get("dynamic")
 
-                    api_result = self._retrieve_api_result(car.finorvin, "status").get("data")
-                    car.binarysensors = self._get_binary_sensors(api_result, car.finorvin)
-                    car.tanklevelpercent = self._get_car_attribute(api_result, "tanklevelpercent")
-                    car.liquidconsumptionstart = self._get_car_attribute(
-                        api_result,
-                        "liquidconsumptionstart")
-                    car.liquidconsumptionreset = self._get_car_attribute(
-                        api_result,
-                        "liquidconsumptionreset")
-                    car.rangeliquid = self._get_car_attribute(
-                        api_result,
-                        "rangeliquid")
-                    car.odometer = self.get_odometer(api_result, car.finorvin)
-                    car.tires = self.get_tires(api_result, car.finorvin)
-                    car.windows = self.get_windows(api_result, car.finorvin)
-                    car.doors = self.get_doors(api_result, car.finorvin)
-                    car.location = self.get_location(car.finorvin)
+            # car.salesdesignation = detail.get("salesDesignation")
 
-                    self.cars.append(car)
+            car.odometer = self._get_car_values(api_result, car.finorvin, Odometer(), ODOMETER_OPTIONS)
+            car.tires = self._get_car_values(api_result, car.finorvin, Tires(), TIRE_OPTIONS)
+            car.doors = self._get_car_values(api_result, car.finorvin, Doors(), DOOR_OPTIONS)
+            car.location = self._get_location(car.finorvin)
+            car.binarysensors = self._get_car_values(api_result, car.finorvin, Binary_Sensors(), BINARY_SENSOR_OPTIONS)
+            car.windows = self._get_car_values(api_result, car.finorvin, Windows(), WINDOW_OPTIONS)
+            if car.features.charging_clima_control:
+                car.electric = self._get_car_values(api_result, car.finorvin, Electric(), ELECTRIC_OPTIONS)
+            if car.features.aux_heat:
+                car.auxheat = self._get_car_values(api_result, car.finorvin, Auxheat(), AUX_HEAT_OPTIONS)
 
-                self.last_update_time = time.time()
+            self.cars.append(car)
 
-    def _get_car_attribute(self, c, attribute_name):
+    def _get_car_attribute(self, c, attribute_name, fin):
         _LOGGER.debug("get_car_attribute %s for %s called",
                       attribute_name,
-                      c.get("vin"))
-
+                      fin)
+        _LOGGER.info(c.get(attribute_name))
         option_status = CarAttribute(c.get(attribute_name).get("value"),
                                      c.get(attribute_name).get("status"),
-                                     c.get(attribute_name).get("ts"))
+                                     0#,c.get(attribute_name).get("ts")
+                                     )
         return option_status
 
-    def _get_binary_sensors(self, car_detail, car_id):
-        _LOGGER.debug("_get_binary_sensors for %s called", car_id)
-
-        binary_sensors = Binary_Sensors()
-
-        for binary_sensor_option in BINARY_SENSOR_OPTIONS:
-            option = car_detail.get(binary_sensor_option)
-            if option is not None:
-                option_status = CarAttribute(option.get("value"),
-                                             option.get("status"),
-                                             option.get("ts"))
-            else:
-                option_status = CarAttribute(0, 4, 0)
-
-            setattr(binary_sensors, binary_sensor_option, option_status)
-
-        return binary_sensors
-
-    def get_odometer(self, car_detail, car_id):
-        _LOGGER.debug("get_odometer for %s called", car_id)
-
-        odometer = Odometer()
-
-        for odometer_option in ODOMETER_OPTIONS:
-            if car_detail is not None:
-                option = car_detail.get(odometer_option)
-                if option is not None:
-                    option_status = CarAttribute(option.get("value"),
-                                                 option.get("status"),
-                                                 option.get("ts"))
-                else:
-                    option_status = CarAttribute(0, 4, 0)
-
-                setattr(odometer, odometer_option, option_status)
-            else:
-                _LOGGER.warning("get_odometer for %s failed", car_id)
-                setattr(odometer, odometer_option, CarAttribute(0, 5, 0))
-
-        return odometer
-
-    def get_windows(self, car_detail, car_id):
-        _LOGGER.debug("get_windows for %s called", car_id)
-
-        windows = Windows()
-
-        for window_option in WINDOW_OPTIONS:
-            if car_detail is not None:
-                option = car_detail.get(window_option)
-                if option is not None:
-                    option_status = CarAttribute(option.get("value"),
-                                                 option.get("status"),
-                                                 option.get("ts"))
-                else:
-                    option_status(0, 4, 0)
-
-                setattr(windows, window_option, option_status)
-            else:
-                _LOGGER.warning("get_windows for %s failed", car_id)
-                setattr(windows, window_option, CarAttribute(-1, -1, None))
-
-        return windows
-
-    def get_doors(self, car_detail, car_id):
-        _LOGGER.debug("get_doors for %s called", car_id)
-
-        doors = Doors()
-
-        for door_option in DOOR_OPTIONS:
-            if car_detail is not None:
-                option = car_detail.get(door_option)
-                if option is not None:
-                    option_status = CarAttribute(option.get("value"),
-                                                 option.get("status"),
-                                                 option.get("ts"))
-                else:
-                    option_status = CarAttribute(0, 4, 0)
-                setattr(doors, door_option, option_status)
-            else:
-                _LOGGER.warning("get_doors for %s failed", car_id)
-                setattr(doors, door_option, CarAttribute(-1, -1, None))
-
-        return doors
-
-    def get_electric(self, car_detail, car_id):
-        _LOGGER.debug("get_electric for %s called", car_id)
-
-        electric = Electric()
-
-        for electric_option in ELECTRIC_OPTIONS:
-            if car_detail is not None:
-                option = car_detail.get(electric_option)
-                option_status = CarAttribute(option.get("value"),
-                                             option.get("status"),
-                                             option.get("ts"))
-                setattr(electric, electric_option, option_status)
-            else:
-                _LOGGER.warning("get_electric for %s failed", car_id)        
-                setattr(electric, electric_option, CarAttribute(-1, -1, None))
-
-        return electric
-
-    def get_location(self, car_id):
+    def _get_location(self, car_id):
         """ get refreshed location information."""
         _LOGGER.debug("get_location for %s called", car_id)
 
-        api_result = self._retrieve_api_result(car_id, "location/v2")
+        api_result = self._retrieve_location_details(car_id)
 
         _LOGGER.debug("get_location result: %s", api_result)
 
@@ -429,37 +416,59 @@ class Controller(object):
 
         for loc_option in LOCATION_OPTIONS:
             if api_result is not None:
-                curr_loc_option = api_result.get("data").get(loc_option)
+                curr_loc_option = api_result.get(loc_option)
                 value = CarAttribute(
-                    curr_loc_option.get("value"),
-                    curr_loc_option.get("status"),
-                    curr_loc_option.get("ts"))
-
+                    curr_loc_option,
+                    None,
+                    None)
                 setattr(location, loc_option, value)
             else:
                 setattr(location, loc_option, CarAttribute(-1, -1, None))
 
         return location
 
-    def get_tires(self, car_detail, car_id):
-        # Get tire status.
-        _LOGGER.debug("get_tires for %s called", car_id)
+    def _get_car_values(self, car_detail, car_id, classInstance, options):
+        _LOGGER.debug("get_car_values %s for %s called", classInstance.name, car_id)
 
-        tires = Tires()
-
-        for tire_option in TIRE_OPTIONS:
+        for option in options:
             if car_detail is not None:
-                curr_tire = car_detail.get(tire_option)
-                curr_tire_status = CarAttribute(
-                    curr_tire.get("value"),
-                    curr_tire.get("status"),
-                    curr_tire.get("ts")
-                )
-                setattr(tires, tire_option, curr_tire_status)
+                curr = car_detail.get(option)
+                if curr is not None:
+                    curr_status = CarAttribute(
+                        curr.get("value"),
+                        curr.get("status"),
+                        car_detail.get("vtime")
+                    )
+                else:
+                    curr_status = CarAttribute(0, 4, 0)
+                setattr(classInstance, option, curr_status)
             else:
-                setattr(tires, tire_option, CarAttribute(-1, -1, None))
+                setattr(classInstance, option, CarAttribute(-1, -1, None))
 
-        return tires
+        return classInstance
+
+    def _get_car_features(self, car_id):
+        _LOGGER.debug("_get_car_features for %s called", car_id)
+        me_status_header = {
+            "Accept-Language": self.accept_lang,
+            "Authorization": "Bearer {}".format(self.auth_handler.token_info["access_token"]),
+            "country_code": "DE",
+            "User-Agent": APP_USER_AGENT
+            }
+        features = self._retrieve_json_at_url(CAR_FEATURE_URL % car_id, me_status_header, "get")
+
+        car_features = Features()
+
+        if self.save_car_details:
+            with open('{0}/feat_{1}.json'.format('/config',car_id), 'w') as outfile:
+                json.dump(features, outfile)
+
+        for feature in features.get("metadata").get("featureEnablements"):
+            setattr(car_features, 
+                    feature.get("name").lower(),
+                    feature.get("enablement") == "ACTIVATED")
+        
+        return car_features
 
     def _get_initial_tokens(self, username, password):
         session = requests.session()
@@ -477,8 +486,8 @@ class Controller(object):
 
         mb_headers = {'Accept-Language': 'en-US',
                       'X-Requested-With': 'com.daimler.mm.android',
-                      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                      'User-Agent': 'Mozilla/5.0 (Linux; Android 5.1; Google Nexus 5 Build/LMY47D) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/39.0.0.0 Mobile Safari/537.36'
+                      'Accept': '*/*',
+                      'User-Agent': ANDROID_USER_AGENT
                       }
 
         session.proxies.update({'https': 'http://localhost:8866' })
@@ -490,7 +499,7 @@ class Controller(object):
         # /wl/third-party-cookie?app-id=MCMAPP.FE_PROD
         # Caution with debug breakpoints here, the cookie life time out of step 1 is short
         sidestep_url = '{0}/wl/third-party-cookie?app-id={1}'.format(URL_LOGIN, API_ID)
-        side_step_result = session.get(sidestep_url, verify=LOGIN_VERIFY_SSL_CERT)
+        session.get(sidestep_url, verify=LOGIN_VERIFY_SSL_CERT)
 
         # Get the hidden elements and put them in our form.
         login_html = lxml.html.fromstring(login_page.text)
@@ -505,8 +514,8 @@ class Controller(object):
         mb_headers = {
             'Accept-Language': 'en-US',
             'X-Requested-With': 'com.daimler.mm.android',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'User-Agent': 'Mozilla/5.0 (Linux; Android 5.1; Google Nexus 5 Build/LMY47D) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/39.0.0.0 Mobile Safari/537.36',
+            'Accept': '*/*',
+            'User-Agent': ANDROID_USER_AGENT,
             'Referer': login_page.url,
             'Origin' : URL_LOGIN,
             'Cache-Control': 'max-age=0',
@@ -532,12 +541,12 @@ class Controller(object):
 
         mb_headers = {
             'Accept-Language': 'en-US', 
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8', 
+            'Accept': '*/*', 
             'Cache-Control': 'max-age=0',
             'Content-Type': 'application/x-www-form-urlencoded',
             'Origin' : URL_LOGIN,
             'Referer': step_2_result.url,
-            'User-Agent': 'Mozilla/5.0 (Linux; Android 5.1; Google Nexus 5 Build/LMY47D) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/39.0.0.0 Mobile Safari/537.36',
+            'User-Agent': ANDROID_USER_AGENT,
             'X-Requested-With': 'com.daimler.mm.android'
             }
 
@@ -579,29 +588,59 @@ class Controller(object):
 
         print(step_4_result.text)
 
+    def _retrieve_car_details(self, fin):
+        me_status_header = {
+            "Accept-Language": self.accept_lang,
+            "Authorization": self._get_bearer_token(),
+            "country_code": "DE",
+            "User-Agent": "MercedesMe/2.13.2+639 (Android 5.1)"
+            }
 
-    def _retrieve_api_result(self, car_id, api):
-        return self._retrieve_json_at_url(
-            "{}/{}/{}/{}".format(
-                URL_API,
-                API_VEHICLES,
-                car_id,
-                api))
+        result = self._retrieve_json_at_url(CAR_STATUS_URL % fin, me_status_header, "get")
+        
+        if self.save_car_details:
+            with open('{0}/state_{1}.json'.format('/config',fin), 'w') as outfile:
+                json.dump(result, outfile)
 
-    def _retrieve_json_at_url(self, url):
+        return result
+
+    def _retrieve_location_details(self, car_id):
+        _LOGGER.debug("get location for %s called", car_id)
+        me_status_header = {
+            "Accept-Language": self.accept_lang,
+            "Authorization": self._get_bearer_token(),
+            "country_code": "DE",
+            "User-Agent": "MercedesMe/2.13.2+639 (Android 5.1)",
+            "lat": "1",
+            "lon": "1"
+            }
+
+        res = self._retrieve_json_at_url(CAR_LOCAT_URL % car_id, 
+                                         me_status_header, "get")
+        return res
+
+    def _retrieve_json_at_url(self, url, headers, type):
         try:
-            _LOGGER.debug("Connect to URL %s", str(url))
-            res = self.session.get(url, verify=LOGIN_VERIFY_SSL_CERT)
+            _LOGGER.debug("Connect to URL %s %s", type, str(url))
+
+            if type == "get":
+                res = self.session.get(url,
+                                       verify=LOGIN_VERIFY_SSL_CERT,
+                                       headers=headers)
+            else:
+                res = self.session.post(url,
+                                        verify=LOGIN_VERIFY_SSL_CERT,
+                                        headers=headers)
         except requests.exceptions.Timeout:
             _LOGGER.exception(
-                "Connection to the api timed out at URL %s", API_VEHICLES)
+                "Connection to the api timed out at URL %s", url)
             return
         if res.status_code != 200 and res.status_code != 403:
             _LOGGER.exception(
                 "Connection failed with http code %s", res.status_code)
             return
         if res.status_code == 403:
-            _LOGGER.warning(
+            _LOGGER.info(
                 "Session invalid, will try to relogin, http code %s",
                 res.status_code)
             self.is_valid_session = False
@@ -609,9 +648,12 @@ class Controller(object):
             self.session = requests.session()
             #login
             return
-        _LOGGER.debug("Connect to URL %s Status Code: %s Content: %s", str(url),
-                      str(res.status_code), res.text)
+        #_LOGGER.debug("Connect to URL %s Status Code: %s Content: %s", str(url),
+        #              str(res.status_code), res.text)
         return res.json()
+
+    def _get_bearer_token(self):
+        return "Bearer {}".format(self.auth_handler.token_info["access_token"])
 
     def _random_string(self, length=64):
         """Generate a random string of fixed length """
