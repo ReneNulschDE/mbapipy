@@ -278,6 +278,7 @@ class Controller(object):
 
     def lock(self, car_id):
         _LOGGER.debug("lock for %s called", car_id)
+        self._check_access_token()
         me_status_header = {
             "Accept-Language": self.accept_lang,
             "Authorization": "Bearer {}".format(self.auth_handler.token_info["access_token"]),
@@ -289,6 +290,7 @@ class Controller(object):
     
     def unlock(self, car_id, pin):
         _LOGGER.debug("unlock for %s called", car_id)
+        self._check_access_token()
         me_status_header = {
             "Accept-Language": self.accept_lang,
             "Authorization": "Bearer {}".format(self.auth_handler.token_info["access_token"]),
@@ -301,6 +303,7 @@ class Controller(object):
 
     def heater_on(self, car_id):
         _LOGGER.debug("lock for %s called", car_id)
+        self._check_access_token()
         me_status_header = {
             "Accept-Language": self.accept_lang,
             "Authorization": "Bearer {}".format(self.auth_handler.token_info["access_token"]),
@@ -312,6 +315,7 @@ class Controller(object):
 
     def heater_off(self, car_id):
         _LOGGER.debug("lock for %s called", car_id)
+        self._check_access_token()
         me_status_header = {
             "Accept-Language": self.accept_lang,
             "Authorization": "Bearer {}".format(self.auth_handler.token_info["access_token"]),
@@ -452,7 +456,7 @@ class Controller(object):
         car_features = Features()
 
         if self.save_car_details:
-            with open('{0}feat_{1}.json'.format(self.save_path,car_id), 'w') as outfile:
+            with open('{0}feat_{1}.json'.format(self.save_path, car_id), 'w') as outfile:
                 json.dump(features, outfile)
 
         for feature in features.get("metadata").get("featureEnablements"):
@@ -473,7 +477,7 @@ class Controller(object):
         result = self._retrieve_json_at_url(CAR_STATUS_URL % fin, me_status_header, "get")
         
         if self.save_car_details:
-            with open('{0}state_{1}.json'.format(self.save_path,fin), 'w') as outfile:
+            with open('{0}state_{1}.json'.format(self.save_path, fin), 'w') as outfile:
                 json.dump(result, outfile)
 
         return result
@@ -509,22 +513,16 @@ class Controller(object):
             _LOGGER.exception(
                 "Connection to the api timed out at URL %s", url)
             return
-        if res.status_code != 200 and res.status_code != 403:
+        if res.status_code != 200:
             _LOGGER.exception(
                 "Connection failed with http code %s", res.status_code)
             return
-        if res.status_code == 403:
-            _LOGGER.info(
-                "Session invalid, will try to relogin, http code %s",
-                res.status_code)
-            self.is_valid_session = False
-            self.session = None
-            self.session = requests.session()
-            #login
-            return
-        #_LOGGER.debug("Connect to URL %s Status Code: %s Content: %s", str(url),
-        #              str(res.status_code), res.text)
+
         return res.json()
 
     def _get_bearer_token(self):
         return "Bearer {}".format(self.auth_handler.token_info["access_token"])
+
+    def _check_access_token(self):
+        if self.auth_handler.is_token_expired(self.auth_handler.token_info):
+            self.auth_handler.refresh_access_token(self.auth_handler.token_info['refresh_token'])
