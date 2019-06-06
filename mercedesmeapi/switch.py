@@ -44,7 +44,8 @@ async def async_setup_platform(hass, config, async_add_devices, discovery_info=N
                         value[2],
                         value[3],
                         value[4],
-                        None))
+                        None,
+                        switch_action=value[7]))
 
     async_add_devices(devices, True)
 
@@ -55,19 +56,23 @@ class MercedesMESwitch(MercedesMeEntity, SwitchDevice):
     @property
     def is_on(self):
         """Get whether the lock is in locked state."""
-        return self._state
+        return True if self.state == STATE_ON else False
     
     def turn_off(self, **kwargs):
         """Send the lock command."""
-        _LOGGER.debug("turn off for: %s", self._name)
-        self._data.heater_off(self._vin)
+        _LOGGER.debug("turn off %s for: %s", self._kwargs.get('switch_action', None), self._name)
+        self._data.switch_car_feature(action = '%s_off' % self._kwargs.get('switch_action', None) , car_id=self._vin)
 
     def turn_on(self, **kwargs):
         """Send the unlock command."""
-        _LOGGER.debug("turn on doors for: %s", self._name)
-        self._data.heater_on(self._vin)
+        _LOGGER.debug("turn on %s for: %s", self._kwargs.get('switch_action', None), self._name)
+        self._data.switch_car_feature('%s_on' % self._kwargs.get('switch_action', None), self._vin)
 
     @property
     def state(self):
         """Return the state of the sensor."""
-        return STATE_ON if self._state else STATE_OFF
+        if self._kwargs.get('switch_action', None) == 'climate':
+            return STATE_OFF if self._state == 'INACTIVE' else STATE_ON
+
+        if self._kwargs.get('switch_action', None) == 'heater':
+            return STATE_OFF if self._state == False else STATE_ON

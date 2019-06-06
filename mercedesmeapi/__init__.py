@@ -94,7 +94,8 @@ LOCKS = {
 }
 
 SWITCHES = {
-    'aux_heat': ['AUX HEAT', None, "auxheat", 'auxheatActive', 'value', 'aux_heat'],
+    'aux_heat': ['AUX HEAT', None, "auxheat", 'auxheatActive', 'value', 'aux_heat', None, 'heater'],
+    'climate_control': ['CLIMATE CONTROL', None, "precond", 'preconditionState', 'value', 'charging_clima_control', None, 'climate'],
 }
 
 SENSORS = {
@@ -278,7 +279,7 @@ class MercedesMeEntity(Entity):
 
     def __init__(self, data, internal_name, sensor_name, vin,
                  unit, licenseplate, feature_name, object_name, attrib_name,
-                 extended_attributes):
+                 extended_attributes, **kwargs):
         """Initialize the MercedesMe entity."""
         self._data = data
         self._state = False
@@ -291,6 +292,7 @@ class MercedesMeEntity(Entity):
         self._attrib_name = attrib_name
         self._licenseplate = licenseplate
         self._extended_attributes = extended_attributes
+        self._kwargs = kwargs
         self._car = next(
             car for car in self._data.cars if car.finorvin == self._vin)
 

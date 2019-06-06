@@ -105,3 +105,4 @@ venv.bak/
 
 
 sec_*.txt
+.vscode/

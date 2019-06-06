@@ -39,6 +39,8 @@ CAR_LOCK_URL = "{0}/api/v1/vehicles/%s/doors/lock".format(URL_VHS_API)
 CAR_UNLOCK_URL = "{0}/api/v1/vehicles/%s/doors/unlock".format(URL_VHS_API)
 CAR_HEAT_ON_URL = "{0}/api/v1/vehicles/%s/auxheat/start".format(URL_VHS_API)
 CAR_HEAT_OFF_URL = "{0}/api/v1/vehicles/%s/auxheat/stop".format(URL_VHS_API)
+CAR_CLIMATE_ON_URL = "{0}/api/v1/vehicles/%s/precond/start".format(URL_VHS_API)
+CAR_CLIMATE_OFF_URL = "{0}/api/v1/vehicles/%s/precond/stop".format(URL_VHS_API)
 CAR_FEATURE_URL = "{0}/api/v2/dashboarddata/%s/vehicle".format(URL_USR_API)
 
 APP_USER_AGENT = "MercedesMe/2.13.2+639 (Android 5.1)"
@@ -153,6 +155,11 @@ AUX_HEAT_OPTIONS = [
     'auxheattime2',
     'auxheattime3']
 
+PRE_COND_OPTIONS = [
+    'preconditionState',
+    'precondimmediate'
+]
+
 # Set to False for testing with tools like fiddler
 # Change to True for production
 LOGIN_VERIFY_SSL_CERT = True
@@ -182,6 +189,7 @@ class Car(object):
         self.windows = None
         self.features = None
         self.auxheat = None
+        self.precond = None
 
 class StateOfObject(object):
     def __init__(self, unit=None, value=None, retrievalstatus=None, timestamp=None):
@@ -226,6 +234,10 @@ class Electric(object):
 class Auxheat(object):
     def __init__(self):
         self.name = "Auxheat"
+
+class Precond(object):
+    def __init__(self):
+        self.name = "Precond"
 
 class Binary_Sensors(object):
     def __init__(self):
@@ -277,53 +289,67 @@ class Controller(object):
         self._update_cars()
 
     def lock(self, car_id):
-        _LOGGER.debug("lock for %s called", car_id)
-        self._check_access_token()
-        me_status_header = {
-            "Accept-Language": self.accept_lang,
-            "Authorization": "Bearer {}".format(self.auth_handler.token_info["access_token"]),
-            "country_code": "DE",
-            "User-Agent": APP_USER_AGENT
-            }
-        _LOGGER.debug(self._retrieve_json_at_url(CAR_LOCK_URL % car_id, me_status_header, "post"))
-        return True
-    
+        return self._execute_car_action(CAR_LOCK_URL, car_id, 'car unlock', None)
+
     def unlock(self, car_id, pin):
-        _LOGGER.debug("unlock for %s called", car_id)
+        return self._execute_car_action(CAR_UNLOCK_URL, car_id, 'car unlock', pin)
+
+    def switch_car_feature(self, action = None, car_id = None):
+        function_list = {
+            'heater_on': self.heater_on,
+            'heater_off': self.heater_off,
+            'climate_on': self.climate_on,
+            'climate_off': self.climate_off
+        }
+        parameters = {
+            'car_id': car_id
+        }
+
+        return function_list[action](parameters)
+
+    def heater_on(self, car_id):
+        return self._execute_car_action(CAR_HEAT_ON_URL, car_id.get('car_id'), 'heater_on', None)
+
+    def heater_off(self, car_id):
+        return self._execute_car_action(CAR_HEAT_OFF_URL, car_id.get('car_id'), 'heater_off', None)
+
+    def climate_on(self, car_id):
+        return self._execute_car_action(CAR_CLIMATE_ON_URL, car_id.get('car_id'), 'climate_on', None)
+
+    def climate_off(self, car_id):
+        return self._execute_car_action(CAR_CLIMATE_OFF_URL, car_id.get('car_id'), 'climate_off', None)
+
+    def _execute_car_action(self, url, car_id, action, pin):
+        _LOGGER.debug("%s for %s called", action, car_id)
         self._check_access_token()
         me_status_header = {
             "Accept-Language": self.accept_lang,
             "Authorization": "Bearer {}".format(self.auth_handler.token_info["access_token"]),
-            "country_code": "DE",
+            "country_code": self.country_code,
             "User-Agent": "MercedesMe/2.13.2+639 (Android 5.1)",
             "x-pin": pin
             }
-        _LOGGER.debug(self._retrieve_json_at_url(CAR_UNLOCK_URL % car_id, me_status_header, "post"))
-        return True
+        if pin is not None:
+            me_status_header['x-pin'] = pin
 
-    def heater_on(self, car_id):
-        _LOGGER.debug("lock for %s called", car_id)
-        self._check_access_token()
-        me_status_header = {
-            "Accept-Language": self.accept_lang,
-            "Authorization": "Bearer {}".format(self.auth_handler.token_info["access_token"]),
-            "country_code": "DE",
-            "User-Agent": APP_USER_AGENT
-            }
-        _LOGGER.debug(self._retrieve_json_at_url(CAR_HEAT_ON_URL % car_id, me_status_header, "post"))
-        return True
+        result = self._retrieve_json_at_url(url % car_id, me_status_header, "post")
+        _LOGGER.debug(result)
+        if result.get("status") == 'PENDING':
+            wait_counter = 0
+            while wait_counter < 30:
+                result = self._retrieve_json_at_url(url % car_id, me_status_header, "get")
+                _LOGGER.debug(result)
+                if result.get('status') == 'PENDING':
+                    wait_counter = wait_counter + 1
+                    time.sleep(1)
+                else:
+                    break
+        self.update()
+        if result.get('status') == 'SUCCESS':
+            return True
+        else:
+            return False
 
-    def heater_off(self, car_id):
-        _LOGGER.debug("lock for %s called", car_id)
-        self._check_access_token()
-        me_status_header = {
-            "Accept-Language": self.accept_lang,
-            "Authorization": "Bearer {}".format(self.auth_handler.token_info["access_token"]),
-            "country_code": "DE",
-            "User-Agent": APP_USER_AGENT
-            }
-        _LOGGER.debug(self._retrieve_json_at_url(CAR_HEAT_OFF_URL % car_id, me_status_header, "post"))
-        return True
 
     def _update_cars(self):
         cur_time = time.time()
@@ -345,6 +371,8 @@ class Controller(object):
                         car.electric = self._get_car_values(api_result, car.finorvin, Electric(), ELECTRIC_OPTIONS)
                     if car.features.aux_heat:
                         car.auxheat = self._get_car_values(api_result, car.finorvin, Auxheat(), AUX_HEAT_OPTIONS)
+                    if car.features.charging_clima_control:
+                        car.precond = self._get_car_values(api_result, car.finorvin, Precond(), PRE_COND_OPTIONS)
 
                 self.last_update_time = time.time()
 
@@ -386,6 +414,8 @@ class Controller(object):
                 car.electric = self._get_car_values(api_result, car.finorvin, Electric(), ELECTRIC_OPTIONS)
             if car.features.aux_heat:
                 car.auxheat = self._get_car_values(api_result, car.finorvin, Auxheat(), AUX_HEAT_OPTIONS)
+            if car.features.charging_clima_control:
+                car.precond = self._get_car_values(api_result, car.finorvin, Precond(), PRE_COND_OPTIONS)
 
             self.cars.append(car)
 
