@@ -190,6 +190,7 @@ class Car(object):
         self.features = None
         self.auxheat = None
         self.precond = None
+        self.electric = None
 
 class StateOfObject(object):
     def __init__(self, unit=None, value=None, retrievalstatus=None, timestamp=None):
@@ -266,7 +267,7 @@ class Controller(object):
     """ Simple Mercedes me API.
     """
     def __init__(self, auth_handler, update_interval, accept_lang, country_code,
-                 excluded_cars, save_car_details, save_path):
+                 excluded_cars, save_car_details, pin, save_path):
 
         self.__lock = RLock()
         self.accept_lang = accept_lang
@@ -279,6 +280,7 @@ class Controller(object):
         self.last_update_time = 0
         self.save_car_details = save_car_details
         self.save_path = save_path
+        self.pin = pin
         self.session = requests.session()
         
         _LOGGER.debug("Controller init complete. Start _get_cars")
@@ -291,10 +293,10 @@ class Controller(object):
     def lock(self, car_id):
         return self._execute_car_action(CAR_LOCK_URL, car_id, 'car unlock', None)
 
-    def unlock(self, car_id, pin):
-        return self._execute_car_action(CAR_UNLOCK_URL, car_id, 'car unlock', pin)
+    def unlock(self, car_id):
+        return self._execute_car_action(CAR_UNLOCK_URL, car_id, 'car unlock', self.pin)
 
-    def switch_car_feature(self, action = None, car_id = None):
+    def switch_car_feature(self, action=None, car_id=None):
         function_list = {
             'heater_on': self.heater_on,
             'heater_off': self.heater_off,
@@ -390,6 +392,10 @@ class Controller(object):
         cars = json.loads(
             response.content.decode('utf8'))['vehicles']
 
+        if self.save_car_details:
+            with open('{0}mercedesme_status.json'.format(self.save_path), 'w') as outfile:
+                json.dump(response.content.decode('utf8'), outfile)
+
         for c in cars:
             
             if c.get("fin") in self.excluded_cars:
@@ -397,7 +403,7 @@ class Controller(object):
 
             car = Car()
             car.finorvin = c.get("fin")
-            car.licenseplate = c.get("licensePlate")
+            car.licenseplate = c.get("licensePlate", car.finorvin)
             car.features = self._get_car_features(car.finorvin)
 
             api_result = self._retrieve_car_details(car.finorvin).get("dynamic")

@@ -244,6 +244,7 @@ def setup(hass, config):
                                 conf.get(CONF_COUNTRY_CODE),
                                 conf.get(CONF_EXCLUDED_CARS),
                                 conf.get(CONF_SAVE_CAR_DETAILS),
+                                conf.get(CONF_PIN),
                                 hass.config.path(''))
 
     hass.data[DATA_MME] = MercedesMeHub(mercedesme_api)

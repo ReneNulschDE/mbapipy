@@ -66,7 +66,7 @@ class MercedesMELock(MercedesMeEntity, LockDevice):
     def unlock(self, **kwargs):
         """Send the unlock command."""
         _LOGGER.debug("Unlocking doors for: %s", self._name)
-        self._data.unlock(self._vin, "2568")
+        self._data.unlock(self._vin)
 
     @property
     def state(self):
