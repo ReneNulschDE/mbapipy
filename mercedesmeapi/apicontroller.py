@@ -16,6 +16,7 @@ import random
 import string
 import time
 import uuid
+import datetime
 
 from urllib.parse import urlparse, parse_qs
 from multiprocessing import RLock
@@ -316,12 +317,14 @@ class Controller(object):
         return self._execute_car_action(CAR_HEAT_OFF_URL, car_id.get('car_id'), 'heater_off', None)
 
     def climate_on(self, car_id):
-        return self._execute_car_action(CAR_CLIMATE_ON_URL, car_id.get('car_id'), 'climate_on', None)
+        now = datetime.datetime.now()
+        post_data = json.dumps({ "currentDepartureTime":(now.hour*60 + now.minute) })
+        return self._execute_car_action(CAR_CLIMATE_ON_URL, car_id.get('car_id'), 'climate_on', None, post_data)
 
     def climate_off(self, car_id):
         return self._execute_car_action(CAR_CLIMATE_OFF_URL, car_id.get('car_id'), 'climate_off', None)
 
-    def _execute_car_action(self, url, car_id, action, pin):
+    def _execute_car_action(self, url, car_id, action, pin, post_data=None):
         _LOGGER.debug("%s for %s called", action, car_id)
         self._check_access_token()
         me_status_header = {
@@ -334,18 +337,28 @@ class Controller(object):
         if pin is not None:
             me_status_header['x-pin'] = pin
 
-        result = self._retrieve_json_at_url(url % car_id, me_status_header, "post")
+        if post_data != None:
+            me_status_header['Content-Type']   = "application/json;charset=UTF-8"
+            me_status_header['Content-Length'] = str(len(post_data))
+            result = self._retrieve_json_at_url(url % car_id, me_status_header, "post", post_data)
+            del me_status_header['Content-Type']
+            del me_status_header['Content-Length']
+        else:
+            result = self._retrieve_json_at_url(url % car_id, me_status_header, "post")
         _LOGGER.debug(result)
+
         if result.get("status") == 'PENDING':
             wait_counter = 0
             while wait_counter < 30:
                 result = self._retrieve_json_at_url(url % car_id, me_status_header, "get")
                 _LOGGER.debug(result)
+
                 if result.get('status') == 'PENDING':
                     wait_counter = wait_counter + 1
                     time.sleep(1)
                 else:
                     break
+
         self.update()
         if result.get('status') == 'SUCCESS':
             return True
@@ -533,7 +546,7 @@ class Controller(object):
                                          me_status_header, "get")
         return res
 
-    def _retrieve_json_at_url(self, url, headers, type):
+    def _retrieve_json_at_url(self, url, headers, type, post_data=None):
         try:
             _LOGGER.debug("Connect to URL %s %s", type, str(url))
 
@@ -542,9 +555,16 @@ class Controller(object):
                                        verify=LOGIN_VERIFY_SSL_CERT,
                                        headers=headers)
             else:
-                res = self.session.post(url,
-                                        verify=LOGIN_VERIFY_SSL_CERT,
-                                        headers=headers)
+                if post_data == None:
+                    res = self.session.post(url,
+                                            verify=LOGIN_VERIFY_SSL_CERT,
+                                            headers=headers)
+                else:
+                    res = self.session.post(url,
+                                            verify=LOGIN_VERIFY_SSL_CERT,
+                                            headers=headers,
+                                            data=post_data)
+
         except requests.exceptions.Timeout:
             _LOGGER.exception(
                 "Connection to the api timed out at URL %s", url)
