@@ -355,7 +355,7 @@ class Controller(object):
 
                 if result.get('status') == 'PENDING':
                     wait_counter = wait_counter + 1
-                    time.sleep(1)
+                    time.sleep(10)
                 else:
                     break
 
