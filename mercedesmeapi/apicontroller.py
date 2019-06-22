@@ -564,15 +564,10 @@ class Controller(object):
                                        verify=LOGIN_VERIFY_SSL_CERT,
                                        headers=headers)
             else:
-                if post_data == None:
-                    res = self.session.post(url,
-                                            verify=LOGIN_VERIFY_SSL_CERT,
-                                            headers=headers)
-                else:
-                    res = self.session.post(url,
-                                            verify=LOGIN_VERIFY_SSL_CERT,
-                                            headers=headers,
-                                            data=post_data)
+                res = self.session.post(url,
+                                        verify=LOGIN_VERIFY_SSL_CERT,
+                                        headers=headers,
+                                        data=post_data)
         except requests.exceptions.Timeout:
             _LOGGER.exception(
                 "Connection to the api timed out at URL %s", url)
