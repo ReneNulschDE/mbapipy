@@ -344,14 +344,12 @@ class Controller(object):
         if post_data != None:
             me_status_header['Content-Type']   = "application/json;charset=UTF-8"
             me_status_header['Content-Length'] = str(len(post_data))
-            result = self._retrieve_json_at_url(url % car_id, me_status_header, "post", post_data)
+        result = self._retrieve_json_at_url(url % car_id, me_status_header, "post", post_data)
+        _LOGGER.debug(result)
+        if post_data != None:
             del me_status_header['Content-Type']
             del me_status_header['Content-Length']
-        else:
-            result = self._retrieve_json_at_url(url % car_id, me_status_header, "post")
-
-        _LOGGER.debug(result)
-
+        
         if result.get("status") == 'PENDING':
             wait_counter = 0
             while wait_counter < 30:
