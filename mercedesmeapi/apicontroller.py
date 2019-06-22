@@ -41,7 +41,7 @@ CAR_UNLOCK_URL = "{0}/api/v1/vehicles/%s/doors/unlock".format(URL_VHS_API)
 CAR_HEAT_ON_URL = "{0}/api/v1/vehicles/%s/auxheat/start".format(URL_VHS_API)
 CAR_HEAT_OFF_URL = "{0}/api/v1/vehicles/%s/auxheat/stop".format(URL_VHS_API)
 CAR_CLIMATE_ON_URL = "{0}/api/v1/vehicles/%s/precond/start".format(URL_VHS_API)
-CAR_CLIMATE_OFF_URL = "{0}/api/v1/vehicles/%s/precond/stop".format(URL_VHS_API)
+CAR_CLIMATE_OFF_URL = "{0}/api/v1/vehicles/%s/precondAtDeparture/disable".format(URL_VHS_API)
 CAR_FEATURE_URL = "{0}/api/v2/dashboarddata/%s/vehicle".format(URL_USR_API)
 
 APP_USER_AGENT = "MercedesMe/2.13.2+639 (Android 5.1)"
@@ -311,10 +311,14 @@ class Controller(object):
         return function_list[action](parameters)
 
     def heater_on(self, car_id):
-        return self._execute_car_action(CAR_HEAT_ON_URL, car_id.get('car_id'), 'heater_on', None)
+        now = datetime.datetime.now()
+        post_data = json.dumps({ "currentDepartureTime":(now.hour*60 + now.minute) })
+        return self._execute_car_action(CAR_HEAT_ON_URL, car_id.get('car_id'),
+                                        'heater_on', None, post_data)
 
     def heater_off(self, car_id):
-        return self._execute_car_action(CAR_HEAT_OFF_URL, car_id.get('car_id'), 'heater_off', None)
+        return self._execute_car_action(CAR_HEAT_OFF_URL, car_id.get('car_id'),
+                                        'heater_off', None, None)
 
     def climate_on(self, car_id):
         now = datetime.datetime.now()
@@ -322,7 +326,8 @@ class Controller(object):
         return self._execute_car_action(CAR_CLIMATE_ON_URL, car_id.get('car_id'), 'climate_on', None, post_data)
 
     def climate_off(self, car_id):
-        return self._execute_car_action(CAR_CLIMATE_OFF_URL, car_id.get('car_id'), 'climate_off', None)
+        return self._execute_car_action(CAR_CLIMATE_OFF_URL, car_id.get('car_id'),
+                                        'climate_off', None, None)
 
     def _execute_car_action(self, url, car_id, action, pin, post_data=None):
         _LOGGER.debug("%s for %s called", action, car_id)
@@ -331,8 +336,7 @@ class Controller(object):
             "Accept-Language": self.accept_lang,
             "Authorization": "Bearer {}".format(self.auth_handler.token_info["access_token"]),
             "country_code": self.country_code,
-            "User-Agent": "MercedesMe/2.13.2+639 (Android 5.1)",
-            "x-pin": pin
+            "User-Agent": "MercedesMe/2.13.2+639 (Android 5.1)"
             }
         if pin is not None:
             me_status_header['x-pin'] = pin
@@ -345,12 +349,13 @@ class Controller(object):
             del me_status_header['Content-Length']
         else:
             result = self._retrieve_json_at_url(url % car_id, me_status_header, "post")
+
         _LOGGER.debug(result)
 
         if result.get("status") == 'PENDING':
             wait_counter = 0
             while wait_counter < 30:
-                result = self._retrieve_json_at_url(url % car_id, me_status_header, "get")
+                result = self._retrieve_json_at_url(url % car_id, me_status_header, "get", None)
                 _LOGGER.debug(result)
 
                 if result.get('status') == 'PENDING':
@@ -379,7 +384,10 @@ class Controller(object):
                     car.odometer = self._get_car_values(api_result, car.finorvin, Odometer(), ODOMETER_OPTIONS)
                     car.tires = self._get_car_values(api_result, car.finorvin, Tires(), TIRE_OPTIONS)
                     car.doors = self._get_car_values(api_result, car.finorvin, Doors(), DOOR_OPTIONS)
-                    car.location = self._get_location(car.finorvin)
+            
+                    if car.features.vehicle_locator:
+                        car.location = self._get_location(car.finorvin)
+            
                     car.binarysensors = self._get_car_values(api_result, car.finorvin, Binary_Sensors(), BINARY_SENSOR_OPTIONS)
                     car.windows = self._get_car_values(api_result, car.finorvin, Windows(), WINDOW_OPTIONS)
                     if car.features.charging_clima_control:
@@ -426,7 +434,10 @@ class Controller(object):
             car.odometer = self._get_car_values(api_result, car.finorvin, Odometer(), ODOMETER_OPTIONS)
             car.tires = self._get_car_values(api_result, car.finorvin, Tires(), TIRE_OPTIONS)
             car.doors = self._get_car_values(api_result, car.finorvin, Doors(), DOOR_OPTIONS)
-            car.location = self._get_location(car.finorvin)
+
+            if car.features.vehicle_locator:
+                car.location = self._get_location(car.finorvin)
+
             car.binarysensors = self._get_car_values(api_result, car.finorvin, Binary_Sensors(), BINARY_SENSOR_OPTIONS)
             car.windows = self._get_car_values(api_result, car.finorvin, Windows(), WINDOW_OPTIONS)
             if car.features.charging_clima_control:
@@ -500,7 +511,7 @@ class Controller(object):
             "country_code": "DE",
             "User-Agent": APP_USER_AGENT
             }
-        features = self._retrieve_json_at_url(CAR_FEATURE_URL % car_id, me_status_header, "get")
+        features = self._retrieve_json_at_url(CAR_FEATURE_URL % car_id, me_status_header, "get", None)
 
         car_features = Features()
 
@@ -523,7 +534,7 @@ class Controller(object):
             "User-Agent": "MercedesMe/2.13.2+639 (Android 5.1)"
             }
 
-        result = self._retrieve_json_at_url(CAR_STATUS_URL % fin, me_status_header, "get")
+        result = self._retrieve_json_at_url(CAR_STATUS_URL % fin, me_status_header, "get", None)
         
         if self.save_car_details:
             with open('{0}state_{1}.json'.format(self.save_path, fin), 'w') as outfile:
@@ -543,7 +554,7 @@ class Controller(object):
             }
 
         res = self._retrieve_json_at_url(CAR_LOCAT_URL % car_id, 
-                                         me_status_header, "get")
+                                         me_status_header, "get", None)
         return res
 
     def _retrieve_json_at_url(self, url, headers, type, post_data=None):
@@ -564,7 +575,6 @@ class Controller(object):
                                             verify=LOGIN_VERIFY_SSL_CERT,
                                             headers=headers,
                                             data=post_data)
-
         except requests.exceptions.Timeout:
             _LOGGER.exception(
                 "Connection to the api timed out at URL %s", url)
