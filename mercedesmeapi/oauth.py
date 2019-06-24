@@ -110,7 +110,7 @@ class MercedesMeOAuth(object):
               + 'redirect_uri={}&'.format(self.REDIRECT_URI) \
               + 'client_id={}&'.format(self.OAUTH_CLIENT_ID) \
               + 'refresh_token={}'.format(refresh_token)
-        _LOGGER.warn(url)
+        
         response = requests.post(
             url, data=None,
             headers=headers, verify=LOGIN_VERIFY_SSL_CERT)
