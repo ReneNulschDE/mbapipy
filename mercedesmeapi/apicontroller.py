@@ -321,8 +321,9 @@ class Controller(object):
                                         'heater_off', None, None)
 
     def climate_on(self, car_id):
-        return self._execute_car_action(CAR_CLIMATE_ON_URL, car_id.get('car_id'),
-                                        'climate_on', None, None)
+        now = datetime.datetime.now()
+        post_data = json.dumps({ "currentDepartureTime":(now.hour*60 + now.minute) })
+        return self._execute_car_action(CAR_CLIMATE_ON_URL, car_id.get('car_id'), 'climate_on', None, post_data)
 
     def climate_off(self, car_id):
         return self._execute_car_action(CAR_CLIMATE_OFF_URL, car_id.get('car_id'),
@@ -340,18 +341,27 @@ class Controller(object):
         if pin is not None:
             me_status_header['x-pin'] = pin
 
+        if post_data != None:
+            me_status_header['Content-Type']   = "application/json;charset=UTF-8"
+            me_status_header['Content-Length'] = str(len(post_data))
         result = self._retrieve_json_at_url(url % car_id, me_status_header, "post", post_data)
         _LOGGER.debug(result)
+        if post_data != None:
+            del me_status_header['Content-Type']
+            del me_status_header['Content-Length']
+        
         if result.get("status") == 'PENDING':
             wait_counter = 0
             while wait_counter < 30:
                 result = self._retrieve_json_at_url(url % car_id, me_status_header, "get", None)
                 _LOGGER.debug(result)
+
                 if result.get('status') == 'PENDING':
                     wait_counter = wait_counter + 1
                     time.sleep(1)
                 else:
                     break
+
         self.update()
         if result.get('status') == 'SUCCESS':
             return True
