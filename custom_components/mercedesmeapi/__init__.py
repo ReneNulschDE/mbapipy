@@ -162,8 +162,7 @@ SENSORS = {
                              'chargingstatus',
                              'soc',
                              'showChargingErrorAndDemand',
-                             'electricconsumptionstart',
-                             'batteryState'}],
+                             'electricconsumptionstart'}],
 
     'auxheatstatus': ['auxheat status', None, "auxheat", 'auxheatstatus',
                       'value', 'aux_heat',
@@ -206,7 +205,8 @@ SENSORS = {
                      "rangeliquid",
                      "serviceintervaldays",
                      "tanklevelpercent",
-                     "tankReserveLamp"}],
+                     "tankReserveLamp",
+                     'batteryState'}],
 }
 
 
