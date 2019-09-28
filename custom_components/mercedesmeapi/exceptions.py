@@ -1,7 +1,7 @@
 """ Mercedes me exception class.
 
 Attributes:
-    code (int): 
+    code (int):
 
 """
 

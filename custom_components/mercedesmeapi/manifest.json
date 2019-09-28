@@ -1,0 +1,14 @@
+{
+    "domain": "mercedesmeapi",
+    "name": "MercedesMeApi",
+    "documentation": "https://github.com/custom-components/blueprint",
+    "dependencies": [],
+    "config_flow": false,
+    "codeowners": [
+      "@renenulschde"
+    ],
+    "requirements": [
+      "lxml"
+    ],
+    "homeassistant": "0.96.0"
+  }

@@ -6,10 +6,10 @@ import hashlib
 import json
 import logging
 import time
-import sys
+#import sys
 from os import urandom
 
-import urllib
+#import urllib
 from urllib.parse import parse_qs, urlparse
 
 import requests
@@ -66,7 +66,7 @@ class MercedesMeOAuth(object):
     def get_cached_token(self):
         ''' Gets a cached auth token
         '''
-        _LOGGER.info("start: get_cached_token")
+        _LOGGER.debug("start: " + __name__)
         token_info = None
         if self.cache_path:
             try:
@@ -76,7 +76,7 @@ class MercedesMeOAuth(object):
                 token_info = json.loads(token_info_string)
 
                 if self.is_token_expired(token_info):
-                    _LOGGER.info("get_cached_token - token expired - start refresh")
+                    _LOGGER.debug(__name__ + " - token expired - start refresh")
                     token_info = self.refresh_access_token(
                         token_info['refresh_token'])
 
@@ -101,23 +101,25 @@ class MercedesMeOAuth(object):
     def refresh_access_token(self, refresh_token):
         """ Gets the new access token
         """
-        _LOGGER.debug("access_token_refresh started - refresh_token: %s", refresh_token)
+        _LOGGER.debug("access_token_refresh started - refresh_token: %s",
+                      refresh_token)
+
         headers = {'User-Agent': 'okhttp/3.9.0',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
+                   'Content-Type': 'application/x-www-form-urlencoded'}
+
         url = '{}?'.format(self.OAUTH_TOKEN_URL) \
               + 'grant_type=refresh_token&' \
               + 'redirect_uri={}&'.format(self.REDIRECT_URI) \
               + 'client_id={}&'.format(self.OAUTH_CLIENT_ID) \
               + 'refresh_token={}'.format(refresh_token)
-        
+
         response = requests.post(
             url, data=None,
             headers=headers, verify=LOGIN_VERIFY_SSL_CERT)
 
         if response.status_code != 200:
-            _LOGGER.warn('headers %s', headers)
-            _LOGGER.warn('request %s', response.url)
+            _LOGGER.warning('headers %s', headers)
+            _LOGGER.warning('request %s', response.url)
             self._warn("couldn't refresh token: code:%d reason:%s" \
                 % (response.status_code, response.reason))
             return None
@@ -139,7 +141,7 @@ class MercedesMeOAuth(object):
         return token_info
 
     def _warn(self, msg):
-        _LOGGER.warn('warning: %s', msg)
+        _LOGGER.warning('warning: %s', msg)
 
     def request_initial_token(self):
         session = requests.session()
@@ -267,7 +269,7 @@ class MercedesMeOAuth(object):
             return token_info
         else:
             _LOGGER.debug("Error getting Access-Token. %s",
-                            step_3_result.text)
+                          step_3_result.text)
 
 
 
@@ -278,6 +280,7 @@ class MercedesMeOAuth(object):
 
     def _generate_code_challenge(self, code):
         """Generate a hash of the given string """
-        m = hashlib.sha256()
-        m.update(code.encode("utf-8"))
-        return str(base64.urlsafe_b64encode(m.digest()), "utf-8").rstrip('=')
+        code_challenge = hashlib.sha256()
+        code_challenge.update(code.encode("utf-8"))
+        return str(base64.urlsafe_b64encode(
+            code_challenge.digest()), "utf-8").rstrip('=')
