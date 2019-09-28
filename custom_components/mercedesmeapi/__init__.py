@@ -162,7 +162,8 @@ SENSORS = {
                              'chargingstatus',
                              'soc',
                              'showChargingErrorAndDemand',
-                             'electricconsumptionstart'}],
+                             'electricconsumptionstart',
+                             'batteryState'}],
 
     'auxheatstatus': ['auxheat status', None, "auxheat", 'auxheatstatus',
                       'value', 'aux_heat',
