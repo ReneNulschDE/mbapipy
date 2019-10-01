@@ -1,7 +1,7 @@
 {
     "domain": "mercedesmeapi",
     "name": "MercedesMeApi",
-    "documentation": "https://github.com/custom-components/blueprint",
+    "documentation": "https://github.com/ReneNulschDE/mbapipy",
     "dependencies": [],
     "config_flow": false,
     "codeowners": [
