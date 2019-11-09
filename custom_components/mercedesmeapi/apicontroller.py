@@ -70,7 +70,8 @@ ODOMETER_OPTIONS = ["odo",
                     "rangeliquid",
                     "serviceintervaldays",
                     "tanklevelpercent",
-                    "tankReserveLamp"]
+                    "tankReserveLamp",
+                    "batteryState"]
 
 LOCATION_OPTIONS = ["latitude",
                     "longitude",
