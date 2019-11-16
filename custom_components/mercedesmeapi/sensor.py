@@ -2,11 +2,11 @@
 Support for Mercedes cars with Mercedes ME.
 
 For more details about this component, please refer to the documentation at
-https://home-assistant.io/components/sensor.mercedesme/
+https://github.com/ReneNulschDE/mbapipy/
 """
 import logging
 
-from custom_components.mercedesmeapi import DATA_MME, MercedesMeEntity
+from custom_components.mercedesmeapi import DOMAIN, MercedesMeEntity
 from .const import SENSORS
 
 DEPENDENCIES = ['mercedesmeapi']
@@ -20,7 +20,7 @@ async def async_setup_platform(hass, config, async_add_devices,
     if discovery_info is None:
         return
 
-    data = hass.data[DATA_MME].data
+    data = hass.data[DOMAIN].data
 
     if not data.cars:
         _LOGGER.info("No Cars found.")
@@ -30,16 +30,17 @@ async def async_setup_platform(hass, config, async_add_devices,
     for car in data.cars:
         for key, value in sorted(SENSORS.items()):
             if value[5] is None or getattr(car.features, value[5]) is True:
-                device = MercedesMESensor(data,
-                                          key,
-                                          value[0],
-                                          car.finorvin,
-                                          value[1],
-                                          car.licenseplate,
-                                          value[2],
-                                          value[3],
-                                          value[4],
-                                          value[6])
+                device = MercedesMESensor(
+                            data,
+                            key,
+                            value[0],
+                            car.finorvin,
+                            value[1],
+                            car.licenseplate,
+                            value[2],
+                            value[3],
+                            value[4],
+                            value[6])
                 if device.device_retrieval_status() == "VALID":
                     devices.append(device)
 

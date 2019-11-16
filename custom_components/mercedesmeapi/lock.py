@@ -2,14 +2,14 @@
 Support for Mercedes cars with Mercedes ME.
 
 For more details about this component, please refer to the documentation at
-https://home-assistant.io/components/sensor.mercedesme/
+https://github.com/ReneNulschDE/mbapipy/
 """
 import logging
 
 from homeassistant.components.lock import LockDevice
 from homeassistant.const import STATE_LOCKED, STATE_UNLOCKED
 
-from custom_components.mercedesmeapi import DATA_MME, MercedesMeEntity
+from custom_components.mercedesmeapi import DOMAIN, MercedesMeEntity
 from .const import LOCKS
 
 DEPENDENCIES = ['mercedesmeapi']
@@ -23,7 +23,7 @@ async def async_setup_platform(hass, config, async_add_devices,
     if discovery_info is None:
         return
 
-    data = hass.data[DATA_MME].data
+    data = hass.data[DOMAIN].data
 
     if not data.cars:
         _LOGGER.info("No Cars found.")

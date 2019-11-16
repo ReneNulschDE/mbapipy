@@ -2,25 +2,22 @@
 Support for MercedesME System.
 
 For more details about this component, please refer to the documentation at
-https://home-assistant.io/components/mercedesme/
+https://github.com/ReneNulschDE/mbapipy/
 """
 import logging
 from datetime import timedelta
 
 import voluptuous as vol
 
-import homeassistant.helpers.config_validation as cv
-from homeassistant.const import (
-    CONF_SCAN_INTERVAL, CONF_USERNAME, CONF_PASSWORD)
-from homeassistant.helpers import discovery
+from homeassistant.const import (CONF_SCAN_INTERVAL,
+                                 CONF_USERNAME, CONF_PASSWORD)
+from homeassistant.helpers import discovery, config_validation as cv
 from homeassistant.helpers.dispatcher import dispatcher_send
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import track_time_interval
 
 from .apicontroller import Controller
 from .oauth import MercedesMeOAuth
-
-# DEPENDENCIES = ["http"]
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -32,14 +29,8 @@ CONF_PIN = "pin"
 CONF_EXCLUDED_CARS = "excluded_cars"
 CONF_SAVE_CAR_DETAILS = "save_car_details"
 
-DATA_MME = "mercedesmeapi"
 DEFAULT_NAME = "Mercedes ME"
 DOMAIN = "mercedesmeapi"
-
-FEATURE_NOT_AVAILABLE = "The feature %s is not available for your car %s"
-
-NOTIFICATION_ID = "mercedesmeapi_integration_notification"
-NOTIFICATION_TITLE = "Mercedes me integration setup"
 
 SIGNAL_UPDATE_MERCEDESME = "mercedesmeapi_update"
 
@@ -76,13 +67,13 @@ def setup(hass, config):
     token_info = auth_handler.get_cached_token()
 
     if not token_info:
-        _LOGGER.info("no token; requesting authorization")
+        _LOGGER.debug("no token; requesting authorization")
         token_info = auth_handler.request_initial_token()
     else:
-        _LOGGER.info("cached token found")
+        _LOGGER.debug("cached token found")
 
     if not token_info:
-        _LOGGER.info("no token; authorization failed; check debug log")
+        _LOGGER.warning("no token; authorization failed; check debug log")
         return
 
     mercedesme_api = Controller(auth_handler,
@@ -94,7 +85,7 @@ def setup(hass, config):
                                 conf.get(CONF_PIN),
                                 hass.config.path(""))
 
-    hass.data[DATA_MME] = MercedesMeHub(mercedesme_api)
+    hass.data[DOMAIN] = MercedesMeHub(mercedesme_api)
 
     discovery.load_platform(hass, "sensor", DOMAIN, {}, config)
     discovery.load_platform(hass, "lock", DOMAIN, {}, config)
@@ -105,7 +96,7 @@ def setup(hass, config):
     def hub_refresh(event_time):
         """Call Mercedes me API to refresh information."""
         _LOGGER.info("Updating Mercedes me component.")
-        hass.data[DATA_MME].data.update()
+        hass.data[DOMAIN].data.update()
         dispatcher_send(hass, SIGNAL_UPDATE_MERCEDESME)
 
     track_time_interval(
