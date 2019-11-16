@@ -1,3 +1,10 @@
+MERCEDESME_COMPONENTS = [
+    "sensor",
+    "lock",
+    "binary_sensor",
+    "device_tracker",
+    "switch"
+]
 
 BINARY_SENSORS = {
 
@@ -31,12 +38,12 @@ BINARY_SENSORS = {
                           "windowstatusrearleft",
                           "windowstatusrearright",
                           "windowstatusfrontright",
-                          "windowstatusfrontleft",}],
+                          "windowstatusfrontleft"}],
 
     "tirewarninglamp": ["Tire Warning",
                         None,
                         "tires",
-                        "tirewarninglamp",
+                        "tireWarningRollup",
                         "value",
                         None,
                         {
@@ -45,12 +52,13 @@ BINARY_SENSORS = {
                             "tirepressureFrontRight",
                             "tirepressureFrontLeft",
                             "tirewarningsrdk",
-                            "tirewarningsprw"
+                            "tirewarningsprw",
                             "tireMarkerFrontRight",
                             "tireMarkerFrontLeft",
                             "tireMarkerRearLeft",
                             "tireMarkerRearRight",
                             "tireWarningRollup",
+                            "tirewarninglamp",
                             "lastTirepressureTimestamp"}]
 }
 
@@ -87,27 +95,27 @@ SENSORS = {
                  "rearRightDoorClosed",
                  "doorsClosed",
                  "trunkStateRollup",
-                 "sunroofstatus",}],
+                 "sunroofstatus"}],
 
-    "rangeElectricKm" : ["Range electric", "Km", "electric", "rangeElectricKm",
-                         "value", "charging_clima_control",
-                         {
-                             "rangeelectric",
-                             "rangeElectricKm",
-                             "criticalStateOfSoc",
-                             "maxrange",
-                             "stateOfChargeElectricPercent",
-                             "endofchargetime",
-                             "criticalStateOfDeparturetimesoc",
-                             "warninglowbattery",
-                             "electricconsumptionreset",
-                             "maxStateOfChargeElectricPercent",
-                             "supplybatteryvoltage",
-                             "electricChargingStatus",
-                             "chargingstatus",
-                             "soc",
-                             "showChargingErrorAndDemand",
-                             "electricconsumptionstart"}],
+    "rangeElectricKm": ["Range electric", "Km", "electric", "rangeElectricKm",
+                        "value", "charging_clima_control",
+                        {
+                            "rangeelectric",
+                            "rangeElectricKm",
+                            "criticalStateOfSoc",
+                            "maxrange",
+                            "stateOfChargeElectricPercent",
+                            "endofchargetime",
+                            "criticalStateOfDeparturetimesoc",
+                            "warninglowbattery",
+                            "electricconsumptionreset",
+                            "maxStateOfChargeElectricPercent",
+                            "supplybatteryvoltage",
+                            "electricChargingStatus",
+                            "chargingstatus",
+                            "soc",
+                            "showChargingErrorAndDemand",
+                            "electricconsumptionstart"}],
 
     "auxheatstatus": ["auxheat status", None, "auxheat", "auxheatstatus",
                       "value", "aux_heat",

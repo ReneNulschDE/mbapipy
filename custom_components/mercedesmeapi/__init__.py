@@ -15,9 +15,11 @@ from homeassistant.helpers import discovery, config_validation as cv
 from homeassistant.helpers.dispatcher import dispatcher_send
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import track_time_interval
+from homeassistant.util import slugify
 
 from .apicontroller import Controller
 from .oauth import MercedesMeOAuth
+from .const import MERCEDESME_COMPONENTS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -87,11 +89,8 @@ def setup(hass, config):
 
     hass.data[DOMAIN] = MercedesMeHub(mercedesme_api)
 
-    discovery.load_platform(hass, "sensor", DOMAIN, {}, config)
-    discovery.load_platform(hass, "lock", DOMAIN, {}, config)
-    discovery.load_platform(hass, "device_tracker", DOMAIN, {}, config)
-    discovery.load_platform(hass, "switch", DOMAIN, {}, config)
-    discovery.load_platform(hass, "binary_sensor", DOMAIN, {}, config)
+    for component in MERCEDESME_COMPONENTS:
+        discovery.load_platform(hass, component, DOMAIN, {}, config)
 
     def hub_refresh(event_time):
         """Call Mercedes me API to refresh information."""
@@ -134,6 +133,7 @@ class MercedesMeEntity(Entity):
         self._licenseplate = licenseplate
         self._extended_attributes = extended_attributes
         self._kwargs = kwargs
+        self._unique_id = slugify(f"{self._vin}_{self._internal_name}")
         self._car = next(
             car for car in self._data.cars if car.finorvin == self._vin)
 
@@ -141,6 +141,11 @@ class MercedesMeEntity(Entity):
     def name(self):
         """Return the name of the sensor."""
         return self._name
+
+    @property
+    def unique_id(self) -> str:
+        """Return the name of the sensor."""
+        return self._unique_id
 
     def device_retrieval_status(self):
         return self.get_car_value(self._feature_name,
