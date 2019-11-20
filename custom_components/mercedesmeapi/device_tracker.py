@@ -2,12 +2,12 @@
 Support for Mercedes cars with Mercedes ME.
 
 For more details about this component, please refer to the documentation at
-https://github.com/ReneNulschDE/mbapipy/
+https://home-assistant.io/components/device_tracker.mercedesme/
 """
 import logging
 from datetime import timedelta
 
-from custom_components.mercedesmeapi import DOMAIN
+from custom_components.mercedesmeapi import DATA_MME
 from homeassistant.helpers.event import track_time_interval
 from homeassistant.util import Throttle
 
@@ -23,7 +23,7 @@ def setup_scanner(hass, config, see, discovery_info=None):
     if discovery_info is None:
         return False
 
-    data = hass.data[DOMAIN].data
+    data = hass.data[DATA_MME].data
 
     if not data.cars:
         return False
