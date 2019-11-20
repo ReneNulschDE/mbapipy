@@ -2,7 +2,7 @@
 
 MercedesME platform as a Custom Component for Home Assistant.
 
-Remove other MercedesMe components before use of this one.
+Please login once in the MercedesME IOS or Android app before you install this component
 
 Configuration:
 ```
@@ -16,11 +16,16 @@ Optional configuration values
 mercedesmeapi:
   username: YOUR_USERNAME
   password: YOUR_PASSWORD
-  pin: XXXX                      # need to open the lock, please use the Mercedes web or app to set-up the pin
+  pin: XXXX                           # required to open the lock, please use the Mercedes web or app to set-up the pin
   
-  country_code: DE               # two digts country code
-  accept_lang: en_DE             # four digits country code
-  save_car_details: true         # save a json to the HA config directory with the features and states, please use this for debug only 
+  country_code: DE                    # two digts country code
+  accept_lang: en_DE                  # four digits country code
+  save_car_details: true              # save a json to the HA config directory with the features and states, please use this for debug only 
+  cars:                               # Optional block to overwrite car specific options
+    - vin: FINXXXXXXXXXXXXX1          # required finorvin
+      tire_warning: tirewarninglamp   # optional attributname for tire_warning binary sensor. some cars use tireWarningRollup or tirewarninglamp 
+    - vin: FINXXXXXXXXXXXXX2
+      tire_warning: tireWarningRollup
 ```
 
 Available components:
