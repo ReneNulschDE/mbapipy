@@ -181,6 +181,7 @@ class Car(object):
         self.powerkw = None
         self.numberofdoors = None
         self.numberofseats = None
+        self.vehicle_title = None
 
         self.vehicleHealthStatus = None
         self.binarysensors = None
@@ -285,7 +286,7 @@ class Controller(object):
         self.save_path = save_path
         self.pin = pin
         self.session = requests.session()
-        
+
         _LOGGER.debug("Controller init complete. Start _get_cars")
         self._get_cars()
 
@@ -425,6 +426,8 @@ class Controller(object):
             car = Car()
             car.finorvin = c.get("fin")
             car.licenseplate = c.get("licensePlate", car.finorvin)
+            car.vehicle_title = c.get("vehicleTitle", None)
+            
             car.features = self._get_car_features(car.finorvin)
 
             api_result = self._retrieve_car_details(car.finorvin).get("dynamic")

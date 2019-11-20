@@ -10,8 +10,9 @@ from datetime import timedelta
 import voluptuous as vol
 
 from homeassistant.const import (CONF_SCAN_INTERVAL,
-                                 CONF_USERNAME, CONF_PASSWORD)
+                                 CONF_USERNAME, CONF_PASSWORD, CONF_NAME)
 from homeassistant.helpers import discovery, config_validation as cv
+from homeassistant.helpers import aiohttp_client, device_registry as dr
 from homeassistant.helpers.dispatcher import dispatcher_send
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import track_time_interval
@@ -30,11 +31,22 @@ CONF_ACCEPT_LANG = "accept_lang"
 CONF_PIN = "pin"
 CONF_EXCLUDED_CARS = "excluded_cars"
 CONF_SAVE_CAR_DETAILS = "save_car_details"
+CONF_TIRE_WARNING_INDICATOR = "tire_warning"
+CONF_CARS = "cars"
+CONF_CARS_VIN = "vin"
 
 DEFAULT_NAME = "Mercedes ME"
 DOMAIN = "mercedesmeapi"
 
 SIGNAL_UPDATE_MERCEDESME = "mercedesmeapi_update"
+
+CARS_SCHEMA = vol.Schema(
+    {
+        vol.Required(CONF_CARS_VIN): cv.string,
+        vol.Optional(CONF_TIRE_WARNING_INDICATOR,
+                     default="tirewarninglamp"): cv.string,
+    }
+)
 
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
@@ -48,6 +60,7 @@ CONFIG_SCHEMA = vol.Schema({
             vol.All(cv.ensure_list, [cv.string]),
         vol.Optional(CONF_PIN): cv.string,
         vol.Optional(CONF_SAVE_CAR_DETAILS, default=False): cv.boolean,
+        vol.Optional(CONF_CARS): [CARS_SCHEMA],
     })
 }, extra=vol.ALLOW_EXTRA)
 
@@ -87,10 +100,12 @@ def setup(hass, config):
                                 conf.get(CONF_PIN),
                                 hass.config.path(""))
 
-    hass.data[DOMAIN] = MercedesMeHub(mercedesme_api)
+    hass.data[DOMAIN] = MercedesMeHub(mercedesme_api, conf)
 
     for component in MERCEDESME_COMPONENTS:
-        discovery.load_platform(hass, component, DOMAIN, {}, config)
+        hass.async_create_task(
+            discovery.async_load_platform(hass, component, DOMAIN, {}, config)
+        )
 
     def hub_refresh(event_time):
         """Call Mercedes me API to refresh information."""
@@ -109,9 +124,10 @@ def setup(hass, config):
 class MercedesMeHub(object):
     """Representation of a base MercedesMe device."""
 
-    def __init__(self, data):
+    def __init__(self, data, config):
         """Initialize the entity."""
         self.data = data
+        self.config = config
 
 
 class MercedesMeEntity(Entity):

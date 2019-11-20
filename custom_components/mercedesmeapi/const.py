@@ -43,7 +43,7 @@ BINARY_SENSORS = {
     "tirewarninglamp": ["Tire Warning",
                         None,
                         "tires",
-                        "tireWarningRollup",
+                        "OVERWRITTEN_IN_BINARY_SENSOR",
                         "value",
                         None,
                         {
