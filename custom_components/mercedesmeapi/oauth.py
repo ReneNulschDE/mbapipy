@@ -6,10 +6,8 @@ import hashlib
 import json
 import logging
 import time
-#import sys
 from os import urandom
 
-#import urllib
 from urllib.parse import parse_qs, urlparse
 
 import requests
@@ -66,7 +64,7 @@ class MercedesMeOAuth(object):
     def get_cached_token(self):
         ''' Gets a cached auth token
         '''
-        _LOGGER.debug("start: " + __name__)
+        _LOGGER.debug("start: %s", __name__)
         token_info = None
         if self.cache_path:
             try:
@@ -76,7 +74,8 @@ class MercedesMeOAuth(object):
                 token_info = json.loads(token_info_string)
 
                 if self.is_token_expired(token_info):
-                    _LOGGER.debug(__name__ + " - token expired - start refresh")
+                    _LOGGER.debug("%s - token expired - start refresh",
+                                  __name__)
                     token_info = self.refresh_access_token(
                         token_info['refresh_token'])
 
@@ -86,14 +85,15 @@ class MercedesMeOAuth(object):
         return token_info
 
     def _save_token_info(self, token_info):
-        _LOGGER.info("start: _save_token_info to %s", self.cache_path)
+        _LOGGER.debug("start: _save_token_info to %s", self.cache_path)
         if self.cache_path:
             try:
                 token_file = open(self.cache_path, 'w')
                 token_file.write(json.dumps(token_info))
                 token_file.close()
             except IOError:
-                self._warn("couldn't write token cache to " + self.cache_path)
+                _LOGGER.warning("couldn't write token cache to %s",
+                                self.cache_path)
 
     def is_token_expired(self, token_info):
         return is_token_expired(token_info)
@@ -120,8 +120,8 @@ class MercedesMeOAuth(object):
         if response.status_code != 200:
             _LOGGER.warning('headers %s', headers)
             _LOGGER.warning('request %s', response.url)
-            self._warn("couldn't refresh token: code:%d reason:%s" \
-                % (response.status_code, response.reason))
+            _LOGGER.warning("couldn't refresh token: code:%s reason:%s",
+                            response.status_code, response.reason)
             return None
         token_info = response.json()
         token_info = self._add_custom_values_to_token_info(token_info)
@@ -139,9 +139,6 @@ class MercedesMeOAuth(object):
         token_info['expires_at'] = int(time.time()) + token_info['expires_in']
         token_info['scope'] = self.OAUTH_SCOPE
         return token_info
-
-    def _warn(self, msg):
-        _LOGGER.warning('warning: %s', msg)
 
     def request_initial_token(self):
         session = requests.session()
