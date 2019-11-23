@@ -420,7 +420,7 @@ class Controller(object):
 
         for c in cars:
             
-            if c.get("fin") in self.excluded_cars:
+            if c.get("fin") is None or c.get("fin") in self.excluded_cars:
                 continue
 
             car = Car()
