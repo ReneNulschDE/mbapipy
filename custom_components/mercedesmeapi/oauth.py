@@ -36,6 +36,7 @@ def is_token_expired(token_info):
     now = int(time.time())
     return token_info['expires_at'] - now < 60
 
+
 class MercedesMeOAuth(object):
     '''
     Implements Authorization for Mercedes Benz's OAuth implementation.
@@ -125,7 +126,7 @@ class MercedesMeOAuth(object):
             return None
         token_info = response.json()
         token_info = self._add_custom_values_to_token_info(token_info)
-        if not 'refresh_token' in token_info:
+        if 'refresh_token' not in token_info:
             token_info['refresh_token'] = refresh_token
         self._save_token_info(token_info)
         self.token_info = token_info
@@ -145,7 +146,7 @@ class MercedesMeOAuth(object):
         code_verifier = self._random_string(64)
         code_challenge = self._generate_code_challenge(code_verifier)
 
-        #Start Login Session - Step 1 call API - Result is 302 redirect
+        # Start Login Session - Step 1 call API - Result is 302 redirect
         step1_url = "{0}".format(self.OAUTH_AUTHORIZE_URL) \
                     + "?response_type=code&" \
                     + "client_id={0}&".format(self.OAUTH_CLIENT_ID) \
@@ -161,7 +162,7 @@ class MercedesMeOAuth(object):
             'User-Agent': ANDROID_USERAGENT
             }
 
-        #session.proxies.update({'https': 'http://localhost:8866' })
+        # session.proxies.update({'https': 'http://localhost:8866' })
 
         # First we get a 302 redirect to the login server
         login_page = session.get(step1_url,
@@ -191,7 +192,7 @@ class MercedesMeOAuth(object):
             'Accept': '*/*',
             'User-Agent': ANDROID_USERAGENT,
             'Referer': login_page.url,
-            'Origin' : URL_LOGIN,
+            'Origin': URL_LOGIN,
             'Cache-Control': 'max-age=0',
             'Content-Type': 'application/x-www-form-urlencoded'
             }
@@ -218,7 +219,7 @@ class MercedesMeOAuth(object):
             'Accept': '*/*',
             'Cache-Control': 'max-age=0',
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Origin' : URL_LOGIN,
+            'Origin': URL_LOGIN,
             'Referer': step_2_result.url,
             'User-Agent': ANDROID_USERAGENT,
             'X-Requested-With': 'com.daimler.mm.android'
@@ -267,8 +268,6 @@ class MercedesMeOAuth(object):
         else:
             _LOGGER.debug("Error getting Access-Token. %s",
                           step_3_result.text)
-
-
 
     def _random_string(self, length=64):
         """Generate a random string of fixed length """
