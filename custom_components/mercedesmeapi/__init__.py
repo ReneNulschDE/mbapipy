@@ -10,16 +10,13 @@ from datetime import timedelta
 import voluptuous as vol
 
 from homeassistant.const import (
-    CONF_NAME,
     CONF_PASSWORD,
     CONF_SCAN_INTERVAL,
     CONF_USERNAME,
-    CONF_UNIT_SYSTEM_IMPERIAL,
     LENGTH_KILOMETERS,
     LENGTH_MILES,
 )
 from homeassistant.helpers import discovery, config_validation as cv
-from homeassistant.helpers import aiohttp_client, device_registry as dr
 from homeassistant.helpers.dispatcher import dispatcher_send
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import track_time_interval
@@ -49,7 +46,8 @@ SIGNAL_UPDATE_MERCEDESME = "mercedesmeapi_update"
 CARS_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_CARS_VIN): cv.string,
-        vol.Optional(CONF_TIRE_WARNING_INDICATOR, default="tirewarninglamp"): cv.string,
+        vol.Optional(CONF_TIRE_WARNING_INDICATOR,
+                     default="tirewarninglamp"): cv.string,
     }
 )
 
@@ -149,6 +147,7 @@ class MercedesMeEntity(Entity):
 
     def __init__(
         self,
+        hass,
         data,
         internal_name,
         sensor_name,
@@ -162,10 +161,12 @@ class MercedesMeEntity(Entity):
         **kwargs,
     ):
         """Initialize the MercedesMe entity."""
+        self._hass = hass
         self._data = data
         self._state = False
         self._name = licenseplate + " " + sensor_name
         self._internal_name = internal_name
+        self._internal_unit = unit
         self._unit = unit
         self._vin = vin
         self._feature_name = feature_name
@@ -175,7 +176,8 @@ class MercedesMeEntity(Entity):
         self._extended_attributes = extended_attributes
         self._kwargs = kwargs
         self._unique_id = slugify(f"{self._vin}_{self._internal_name}")
-        self._car = next(car for car in self._data.cars if car.finorvin == self._vin)
+        self._car = next(car for car in self._data.cars
+                         if car.finorvin == self._vin)
 
     @property
     def name(self):
@@ -188,7 +190,7 @@ class MercedesMeEntity(Entity):
         return self._unique_id
 
     def device_retrieval_status(self):
-        return self.get_car_value(
+        return self._get_car_value(
             self._feature_name, self._object_name, "retrievalstatus", "error"
         )
 
@@ -196,15 +198,16 @@ class MercedesMeEntity(Entity):
         """Get the latest data and updates the states."""
         _LOGGER.debug("Updating %s", self._internal_name)
 
-        self._car = next(car for car in self._data.cars if car.finorvin == self._vin)
+        self._car = next(car for car in self._data.cars
+                         if car.finorvin == self._vin)
 
-        self._state = self.get_car_value(
+        self._state = self._get_car_value(
             self._feature_name, self._object_name, self._attrib_name, "error"
         )
 
         _LOGGER.debug("Updated %s %s", self._internal_name, self._state)
 
-    def get_car_value(self, feature, object_name, attrib_name, default_value):
+    def _get_car_value(self, feature, object_name, attrib_name, default_value):
         value = None
 
         if object_name:
@@ -236,19 +239,22 @@ class MercedesMeEntity(Entity):
 
         state = {
             "car": self._licenseplate,
-            "retrievalstatus": self.get_car_value(
-                self._feature_name, self._object_name, "retrievalstatus", "error"
+            "retrievalstatus": self._get_car_value(
+                self._feature_name,
+                self._object_name,
+                "retrievalstatus",
+                "error"
             ),
         }
         if self._extended_attributes is not None:
             for attrib in self._extended_attributes:
                 if (
-                    self.get_car_value(
+                    self._get_car_value(
                         self._feature_name, attrib, "retrievalstatus", "error"
                     )
                     == "VALID"
                 ):
-                    state[attrib] = self.get_car_value(
+                    state[attrib] = self._get_car_value(
                         self._feature_name, attrib, "value", "error"
                     )
         return state
@@ -256,4 +262,8 @@ class MercedesMeEntity(Entity):
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement."""
-        return self._unit
+        if self._unit == LENGTH_KILOMETERS and \
+           not self._hass.config.units.is_metric:
+            return LENGTH_MILES
+        else:
+            return self._unit

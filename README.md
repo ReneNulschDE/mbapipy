@@ -78,3 +78,4 @@ logger:
     custom_components.mercedesmeapi.OAuth: debug
 ```
 
+Tested countries: DE, FI, NL, US, UK

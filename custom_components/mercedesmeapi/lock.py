@@ -35,6 +35,7 @@ async def async_setup_platform(hass, config, async_add_devices,
             if value[5] is None or getattr(car.features, value[5]) is True:
                 devices.append(
                     MercedesMELock(
+                        hass,
                         data,
                         key,
                         value[0],
