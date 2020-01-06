@@ -39,7 +39,7 @@ HTTP_POST = "post"
 
 # Set to False for testing with tools like fiddler
 # Change to True for production
-LOGIN_VERIFY_SSL_CERT = False
+LOGIN_VERIFY_SSL_CERT = True
 
 
 ODOMETER_OPTIONS = [
