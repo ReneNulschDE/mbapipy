@@ -102,7 +102,7 @@ def setup(hass, config):
 
     if not token_info:
         _LOGGER.warning("no token; authorization failed; check debug log")
-        return
+        return False
 
     mercedesme_api = Controller(
         auth_handler,
