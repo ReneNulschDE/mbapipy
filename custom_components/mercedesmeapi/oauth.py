@@ -75,7 +75,7 @@ class MercedesMeOAuth(object):
         self.oauth_client_id = (
             self.OAUTH_CLIENT_ID_US if country_code == "US" else self.OAUTH_CLIENT_ID
         )
-        self.redirect_uri = f'{self.REDIRECT_SERVER_US if country_code == "US" else self.REDIRECT_SERVER_US}{self.REDIRECT_URI}'
+        self.redirect_uri = f'{self.REDIRECT_SERVER_US if country_code == "US" else self.REDIRECT_SERVER}{self.REDIRECT_URI}'
         self.app_name = self.APP_NAME_US if country_code == "US" else self.APP_NAME
         self.token_info = None
 
