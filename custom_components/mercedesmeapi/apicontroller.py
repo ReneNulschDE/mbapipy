@@ -35,7 +35,8 @@ APP_USER_AGENT = "MercedesMe/2.15.1+753 (Android 6.0)"
 
 HTTP_GET = "get"
 HTTP_POST = "post"
-HTTP_PROXY = {'https': 'http://localhost:8080'}
+# HTTP_PROXY = {'https': 'http://localhost:8080'}
+
 # Set to False for testing with tools like fiddler
 # Change to True for production
 LOGIN_VERIFY_SSL_CERT = False
@@ -295,7 +296,7 @@ class Controller(object):
         self.region = "-an" if country_code == "US" else ""
 
         self.session = requests.session()
-        self.session.proxies.update(HTTP_PROXY)
+        # self.session.proxies.update(HTTP_PROXY)
 
         _LOGGER.debug("Controller init complete. Start _get_cars")
         self._get_cars()
