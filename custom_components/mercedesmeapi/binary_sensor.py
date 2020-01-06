@@ -33,12 +33,13 @@ async def async_setup_platform(hass, config, async_add_devices,
 
     devices = []
     for car in data.cars:
-        
+
         tire_warning_field = "tirewarninglamp"
         if conf.get(CONF_CARS) is not None:
             for car_conf in conf.get(CONF_CARS):
                 if car_conf.get(CONF_CARS_VIN) == car.finorvin:
-                    tire_warning_field = car_conf.get(CONF_TIRE_WARNING_INDICATOR)
+                    tire_warning_field = car_conf.get(
+                        CONF_TIRE_WARNING_INDICATOR)
                     break
 
         for key, value in sorted(BINARY_SENSORS.items()):
@@ -47,6 +48,7 @@ async def async_setup_platform(hass, config, async_add_devices,
 
             if value[5] is None or getattr(car.features, value[5]) is True:
                 device = MercedesMEBinarySensor(
+                    hass,
                     data,
                     key,
                     value[0],

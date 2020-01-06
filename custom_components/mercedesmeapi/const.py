@@ -1,3 +1,6 @@
+from homeassistant.const import (
+    LENGTH_KILOMETERS)
+
 MERCEDESME_COMPONENTS = [
     "sensor",
     "lock",
@@ -97,7 +100,8 @@ SENSORS = {
                  "trunkStateRollup",
                  "sunroofstatus"}],
 
-    "rangeElectricKm": ["Range electric", "Km", "electric", "rangeElectricKm",
+    "rangeElectricKm": ["Range electric", LENGTH_KILOMETERS,
+                        "electric", "rangeElectricKm",
                         "value", "charging_clima_control",
                         {
                             "rangeelectric",
@@ -132,7 +136,7 @@ SENSORS = {
     "tanklevelpercent": ["Fuel Level", "%", "odometer", "tanklevelpercent",
                          "value", None, None],
 
-    "odometer": ["Odometer", "Km", "odometer", "odo",
+    "odometer": ["Odometer", LENGTH_KILOMETERS, "odometer", "odo",
                  "value", None,
                  {
                      "distanceReset",
