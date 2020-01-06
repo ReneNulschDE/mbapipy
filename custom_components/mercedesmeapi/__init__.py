@@ -9,8 +9,15 @@ from datetime import timedelta
 
 import voluptuous as vol
 
-from homeassistant.const import (CONF_SCAN_INTERVAL,
-                                 CONF_USERNAME, CONF_PASSWORD, CONF_NAME)
+from homeassistant.const import (
+    CONF_NAME,
+    CONF_PASSWORD,
+    CONF_SCAN_INTERVAL,
+    CONF_USERNAME,
+    CONF_UNIT_SYSTEM_IMPERIAL,
+    LENGTH_KILOMETERS,
+    LENGTH_MILES,
+)
 from homeassistant.helpers import discovery, config_validation as cv
 from homeassistant.helpers import aiohttp_client, device_registry as dr
 from homeassistant.helpers.dispatcher import dispatcher_send
@@ -24,8 +31,6 @@ from .const import MERCEDESME_COMPONENTS
 
 _LOGGER = logging.getLogger(__name__)
 
-DEFAULT_CACHE_PATH = ".mercedesme-token-cache"
-
 CONF_COUNTRY_CODE = "country_code"
 CONF_ACCEPT_LANG = "accept_lang"
 CONF_PIN = "pin"
@@ -35,6 +40,7 @@ CONF_TIRE_WARNING_INDICATOR = "tire_warning"
 CONF_CARS = "cars"
 CONF_CARS_VIN = "vin"
 
+DEFAULT_CACHE_PATH = ".mercedesme-token-cache"
 DEFAULT_NAME = "Mercedes ME"
 DOMAIN = "mercedesmeapi"
 
@@ -43,26 +49,32 @@ SIGNAL_UPDATE_MERCEDESME = "mercedesmeapi_update"
 CARS_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_CARS_VIN): cv.string,
-        vol.Optional(CONF_TIRE_WARNING_INDICATOR,
-                     default="tirewarninglamp"): cv.string,
+        vol.Optional(CONF_TIRE_WARNING_INDICATOR, default="tirewarninglamp"): cv.string,
     }
 )
 
-CONFIG_SCHEMA = vol.Schema({
-    DOMAIN: vol.Schema({
-        vol.Required(CONF_USERNAME): cv.string,
-        vol.Required(CONF_PASSWORD): cv.string,
-        vol.Optional(CONF_SCAN_INTERVAL, default=30):
-            vol.All(cv.positive_int, vol.Clamp(min=60)),
-        vol.Optional(CONF_COUNTRY_CODE, default="DE"): cv.string,
-        vol.Optional(CONF_ACCEPT_LANG, default="en_DE"): cv.string,
-        vol.Optional(CONF_EXCLUDED_CARS, default=[]):
-            vol.All(cv.ensure_list, [cv.string]),
-        vol.Optional(CONF_PIN): cv.string,
-        vol.Optional(CONF_SAVE_CAR_DETAILS, default=False): cv.boolean,
-        vol.Optional(CONF_CARS): [CARS_SCHEMA],
-    })
-}, extra=vol.ALLOW_EXTRA)
+CONFIG_SCHEMA = vol.Schema(
+    {
+        DOMAIN: vol.Schema(
+            {
+                vol.Required(CONF_USERNAME): cv.string,
+                vol.Required(CONF_PASSWORD): cv.string,
+                vol.Optional(CONF_SCAN_INTERVAL, default=30): vol.All(
+                    cv.positive_int, vol.Clamp(min=60)
+                ),
+                vol.Optional(CONF_COUNTRY_CODE, default="DE"): cv.string,
+                vol.Optional(CONF_ACCEPT_LANG, default="en_DE"): cv.string,
+                vol.Optional(CONF_EXCLUDED_CARS, default=[]): vol.All(
+                    cv.ensure_list, [cv.string]
+                ),
+                vol.Optional(CONF_PIN): cv.string,
+                vol.Optional(CONF_SAVE_CAR_DETAILS, default=False): cv.boolean,
+                vol.Optional(CONF_CARS): [CARS_SCHEMA],
+            }
+        )
+    },
+    extra=vol.ALLOW_EXTRA,
+)
 
 
 def setup(hass, config):
@@ -74,10 +86,13 @@ def setup(hass, config):
 
     cache = hass.config.path(DEFAULT_CACHE_PATH)
 
-    auth_handler = MercedesMeOAuth(conf.get(CONF_USERNAME),
-                                   conf.get(CONF_PASSWORD),
-                                   conf.get(CONF_ACCEPT_LANG),
-                                   cache)
+    auth_handler = MercedesMeOAuth(
+        conf.get(CONF_USERNAME),
+        conf.get(CONF_PASSWORD),
+        conf.get(CONF_ACCEPT_LANG),
+        conf.get(CONF_COUNTRY_CODE),
+        cache,
+    )
 
     token_info = auth_handler.get_cached_token()
 
@@ -91,14 +106,16 @@ def setup(hass, config):
         _LOGGER.warning("no token; authorization failed; check debug log")
         return
 
-    mercedesme_api = Controller(auth_handler,
-                                scan_interval,
-                                conf.get(CONF_ACCEPT_LANG),
-                                conf.get(CONF_COUNTRY_CODE),
-                                conf.get(CONF_EXCLUDED_CARS),
-                                conf.get(CONF_SAVE_CAR_DETAILS),
-                                conf.get(CONF_PIN),
-                                hass.config.path(""))
+    mercedesme_api = Controller(
+        auth_handler,
+        scan_interval,
+        conf.get(CONF_ACCEPT_LANG),
+        conf.get(CONF_COUNTRY_CODE),
+        conf.get(CONF_EXCLUDED_CARS),
+        conf.get(CONF_SAVE_CAR_DETAILS),
+        conf.get(CONF_PIN),
+        hass.config.path(""),
+    )
 
     hass.data[DOMAIN] = MercedesMeHub(mercedesme_api, conf)
 
@@ -113,15 +130,12 @@ def setup(hass, config):
         hass.data[DOMAIN].data.update()
         dispatcher_send(hass, SIGNAL_UPDATE_MERCEDESME)
 
-    track_time_interval(
-        hass,
-        hub_refresh,
-        timedelta(seconds=scan_interval))
+    track_time_interval(hass, hub_refresh, timedelta(seconds=scan_interval))
 
     return True
 
 
-class MercedesMeHub(object):
+class MercedesMeHub:
     """Representation of a base MercedesMe device."""
 
     def __init__(self, data, config):
@@ -133,9 +147,20 @@ class MercedesMeHub(object):
 class MercedesMeEntity(Entity):
     """Entity class for MercedesMe devices."""
 
-    def __init__(self, data, internal_name, sensor_name, vin,
-                 unit, licenseplate, feature_name, object_name, attrib_name,
-                 extended_attributes, **kwargs):
+    def __init__(
+        self,
+        data,
+        internal_name,
+        sensor_name,
+        vin,
+        unit,
+        licenseplate,
+        feature_name,
+        object_name,
+        attrib_name,
+        extended_attributes,
+        **kwargs,
+    ):
         """Initialize the MercedesMe entity."""
         self._data = data
         self._state = False
@@ -150,8 +175,7 @@ class MercedesMeEntity(Entity):
         self._extended_attributes = extended_attributes
         self._kwargs = kwargs
         self._unique_id = slugify(f"{self._vin}_{self._internal_name}")
-        self._car = next(
-            car for car in self._data.cars if car.finorvin == self._vin)
+        self._car = next(car for car in self._data.cars if car.finorvin == self._vin)
 
     @property
     def name(self):
@@ -164,22 +188,19 @@ class MercedesMeEntity(Entity):
         return self._unique_id
 
     def device_retrieval_status(self):
-        return self.get_car_value(self._feature_name,
-                                  self._object_name,
-                                  "retrievalstatus",
-                                  "error")
+        return self.get_car_value(
+            self._feature_name, self._object_name, "retrievalstatus", "error"
+        )
 
     def update(self):
         """Get the latest data and updates the states."""
         _LOGGER.debug("Updating %s", self._internal_name)
 
-        self._car = next(
-            car for car in self._data.cars if car.finorvin == self._vin)
+        self._car = next(car for car in self._data.cars if car.finorvin == self._vin)
 
-        self._state = self.get_car_value(self._feature_name,
-                                         self._object_name,
-                                         self._attrib_name,
-                                         "error")
+        self._state = self.get_car_value(
+            self._feature_name, self._object_name, self._attrib_name, "error"
+        )
 
         _LOGGER.debug("Updated %s %s", self._internal_name, self._state)
 
@@ -190,13 +211,19 @@ class MercedesMeEntity(Entity):
             if not feature:
                 value = getattr(
                     getattr(self._car, object_name, default_value),
-                    attrib_name, default_value)
+                    attrib_name,
+                    default_value,
+                )
             else:
                 value = getattr(
                     getattr(
                         getattr(self._car, feature, default_value),
-                        object_name, default_value),
-                    attrib_name, default_value)
+                        object_name,
+                        default_value,
+                    ),
+                    attrib_name,
+                    default_value,
+                )
 
         else:
             value = getattr(self._car, attrib_name, default_value)
@@ -209,20 +236,21 @@ class MercedesMeEntity(Entity):
 
         state = {
             "car": self._licenseplate,
-            "retrievalstatus": self.get_car_value(self._feature_name,
-                                                  self._object_name,
-                                                  "retrievalstatus",
-                                                  "error")
+            "retrievalstatus": self.get_car_value(
+                self._feature_name, self._object_name, "retrievalstatus", "error"
+            ),
         }
         if self._extended_attributes is not None:
             for attrib in self._extended_attributes:
-                if self.get_car_value(
-                        self._feature_name, attrib,
-                        "retrievalstatus", "error") == "VALID":
-                    state[attrib] = self.get_car_value(self._feature_name,
-                                                       attrib,
-                                                       "value",
-                                                       "error")
+                if (
+                    self.get_car_value(
+                        self._feature_name, attrib, "retrievalstatus", "error"
+                    )
+                    == "VALID"
+                ):
+                    state[attrib] = self.get_car_value(
+                        self._feature_name, attrib, "value", "error"
+                    )
         return state
 
     @property
