@@ -78,4 +78,6 @@ logger:
     custom_components.mercedesmeapi.OAuth: debug
 ```
 
-Tested countries: DE, FI, NL, US, UK
+Notes:
+- Tested countries: DE, FI, NL, US, UK
+- Cars out of US and Europe can't be used at the same time
