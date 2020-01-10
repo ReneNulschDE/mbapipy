@@ -29,38 +29,38 @@ mercedesmeapi:
 ```
 
 Available components:
-- Lock
-- Aux Heat Switch
+* Lock
+* Aux Heat Switch
 
-- Binary Sensors:
+* Binary Sensors:
 ```
-- warningenginelight
+* warningenginelight
   attributes: warningbrakefluid, warningwashwater, warningcoolantlevellow, warninglowbattery
 
-- parkbrakestatus
+* parkbrakestatus
   attributes: preWarningBrakeLiningWear
 
-- windowsClosed
+* windowsClosed
   attributes: windowstatusrearleft, windowstatusrearright, windowstatusfrontright, windowstatusfrontleft
 
-- tirewarninglamp
+* tirewarninglamp
   attributes: tirepressureRearLeft, tirepressureRearRight, tirepressureFrontRight, tirepressureFrontLeft, tirewarningsrdk, tirewarningsprwtireMarkerFrontRight, tireMarkerFrontLeft, tireMarkerRearLeft, tireMarkerRearRight, tireWarningRollup, lastTirepressureTimestamp
 ```
 
-- Sensors:
+* Sensors:
 ```
-- lock
+* lock
   attributes: doorStateFrontLeft, doorStateFrontRight, doorStateRearLeft, doorStateRearRight, frontLeftDoorLocked, frontRightDoorLocked, rearLeftDoorLocked, rearRightDoorLocked, frontLeftDoorClosed, frontRightDoorClosed, rearLeftDoorClosed, rearRightDoorClosed, rearRightDoorClosed, doorsClosed, trunkStateRollup, sunroofstatus, fuelLidClosed
 
-- rangeElectricKm
+* rangeElectricKm
   attributes: rangeelectric, rangeElectricKm, criticalStateOfSoc, maxrange, stateOfChargeElectricPercent, endofchargetime, criticalStateOfDeparturetimesoc, warninglowbattery, electricconsumptionreset, maxStateOfChargeElectricPercent, supplybatteryvoltage, electricChargingStatus, chargingstatus, soc, showChargingErrorAndDemand, electricconsumptionstart
   
-- auxheatstatus
+* auxheatstatus
   attributes: auxheatActive, auxheatwarnings, auxheatruntime, auxheatwarningsPush, auxheattimeselection, auxheattime1, auxheattime2, auxheattime3
 
-- tanklevelpercent
+* tanklevelpercent
 
-- odometer
+* odometer
   attributes: distanceReset, distanceStart, averageSpeedReset, averageSpeedStart, distanceZEReset, drivenTimeZEReset, drivenTimeReset, drivenTimeStart, ecoscoretotal, ecoscorefreewhl, ecoscorebonusrange, ecoscoreconst, ecoscoreaccel, gasconsumptionstart, gasconsumptionreset, gasTankRange, gasTankLevel, liquidconsumptionstart, liquidconsumptionreset, liquidRangeSkipIndication, rangeliquid, serviceintervaldays, tanklevelpercent, tankReserveLamp, batteryState
   
 ```
@@ -80,5 +80,6 @@ logger:
 
 
 Notes:
-- Tested countries: DE, FI, NL, US, UK
-- Cars out of US and Europe can't be used at the same time
+- Tested countries: CA, DE, DK, FI, NL, PL, UK, US
+- For Canada please use Country Code US currently
+- Cars out of North America and Europe can't be used at the same time
