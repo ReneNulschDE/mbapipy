@@ -27,6 +27,8 @@ CAR_LOCK_URL = lambda vhs_url: f"{vhs_url}/%s/doors/lock"                       
 CAR_UNLOCK_URL = lambda vhs_url: f"{vhs_url}/%s/doors/unlock"                                       # noqa: E731, E501
 CAR_HEAT_ON_URL = lambda vhs_url: f"{vhs_url}/%s/auxheat/start"                                     # noqa: E731, E501
 CAR_HEAT_OFF_URL = lambda vhs_url: f"{vhs_url}/%s/auxheat/stop"                                     # noqa: E731, E501
+CAR_REMOTE_START_ON_URL = lambda vhs_url: f"{vhs_url}/%s/remoteengine/start"                        # noqa: E731, E501
+CAR_REMOTE_START_OFF_URL = lambda vhs_url: f"{vhs_url}/%s/remoteengine/stop"                        # noqa: E731, E501
 CAR_CLIMATE_ON_URL = lambda vhs_url: f"{vhs_url}/%s/precond/start"                                  # noqa: E731, E501
 CAR_CLIMATE_OFF_URL = lambda vhs_url: f"{vhs_url}/%s/precondAtDeparture/disable"                    # noqa: E731, E501
 CAR_FEATURE_URL = lambda usr_url: f"{usr_url}/api/v2/dashboarddata/%s/vehicle"                      # noqa: E731, E501
@@ -160,6 +162,12 @@ PRE_COND_OPTIONS = [
     'preconditionState',
     'precondimmediate']
 
+REMOTE_START_OPTIONS = [
+    'remoteEngine',
+    'remoteStartEndtime',
+    'remoteStartTemperature'
+]
+
 
 class Car(object):
     def __init__(self):
@@ -253,6 +261,11 @@ class Binary_Sensors(object):
         self.name = "Binary_Sensors"
 
 
+class Remote_Start(object):
+    def __init__(self):
+        self.name = "Remote_Start"
+
+
 class Location(object):
     def __init__(self, latitude=None, longitude=None, heading=None):
         self.name = "Location"
@@ -319,12 +332,28 @@ class Controller(object):
             'car unlock',
             self.pin)
 
+    def remotestart_on(self, car_id):
+        return self._execute_car_action(
+            CAR_REMOTE_START_ON_URL(URL_VHS_API(self.region)),
+            car_id.get('car_id'),
+            'car remote_start on',
+            self.pin)
+
+    def remotestart_off(self, car_id):
+        return self._execute_car_action(
+            CAR_REMOTE_START_OFF_URL(URL_VHS_API(self.region)),
+            car_id.get('car_id'),
+            'car remote_start off',
+            None)
+
     def switch_car_feature(self, action=None, car_id=None):
         function_list = {
             'heater_on': self.heater_on,
             'heater_off': self.heater_off,
             'climate_on': self.climate_on,
-            'climate_off': self.climate_off
+            'climate_off': self.climate_off,
+            'remote_start_on': self.remotestart_on,
+            'remote_start_off': self.remotestart_off
         }
         parameters = {
             'car_id': car_id
@@ -336,7 +365,7 @@ class Controller(object):
         now = datetime.datetime.now()
 
         post_data = json.dumps(
-            {"currentDepartureTime": (now.hour*60 + now.minute)})
+            {"currentDepartureTime": (now.hour * 60 + now.minute)})
 
         return self._execute_car_action(
             CAR_HEAT_ON_URL(URL_VHS_API(self.region)),
@@ -355,7 +384,7 @@ class Controller(object):
     def climate_on(self, car_id):
         now = datetime.datetime.now()
         post_data = json.dumps(
-            {"currentDepartureTime": (now.hour*60 + now.minute)})
+            {"currentDepartureTime": (now.hour * 60 + now.minute)})
 
         return self._execute_car_action(
             CAR_CLIMATE_ON_URL(URL_VHS_API(self.region)),
@@ -440,20 +469,29 @@ class Controller(object):
                     car.windows = self._get_car_values(
                         api_result, car.finorvin, Windows(), WINDOW_OPTIONS)
 
+                    _LOGGER.debug("_update_cars - Feature Check: charging_clima_control:%s ", {car.features.charging_clima_control})
                     if car.features.charging_clima_control:
                         car.electric = self._get_car_values(
                             api_result, car.finorvin,
                             Electric(), ELECTRIC_OPTIONS)
 
+                    _LOGGER.debug("_update_cars - Feature Check: aux_heat:%s ", {car.features.aux_heat})
                     if car.features.aux_heat:
                         car.auxheat = self._get_car_values(
                             api_result, car.finorvin,
                             Auxheat(), AUX_HEAT_OPTIONS)
 
+                    _LOGGER.debug("_update_cars - Feature Check: charging_clima_control:%s ", {car.features.charging_clima_control})
                     if car.features.charging_clima_control:
                         car.precond = self._get_car_values(
                             api_result, car.finorvin,
                             Precond(), PRE_COND_OPTIONS)
+
+                    _LOGGER.debug("_update_cars - Feature Check: remote_engine_start:%s ", {car.features.remote_engine_start})
+                    if car.features.remote_engine_start:
+                        car.remote_start = self._get_car_values(
+                            api_result, car.finorvin,
+                            Remote_Start(), REMOTE_START_OPTIONS)
 
                 self.last_update_time = time.time()
 
@@ -515,17 +553,25 @@ class Controller(object):
             car.windows = self._get_car_values(
                 api_result, car.finorvin, Windows(), WINDOW_OPTIONS)
 
+            _LOGGER.debug("_get_cars - Feature Check: charging_clima_control:%s ", {car.features.charging_clima_control})
             if car.features.charging_clima_control:
                 car.electric = self._get_car_values(
                     api_result, car.finorvin, Electric(), ELECTRIC_OPTIONS)
 
+            _LOGGER.debug("_get_cars - Feature Check: aux_heat:%s ", {car.features.aux_heat})
             if car.features.aux_heat:
                 car.auxheat = self._get_car_values(
                     api_result, car.finorvin, Auxheat(), AUX_HEAT_OPTIONS)
 
+            _LOGGER.debug("_get_cars - Feature Check: charging_clima_control:%s ", {car.features.charging_clima_control})
             if car.features.charging_clima_control:
                 car.precond = self._get_car_values(
                     api_result, car.finorvin, Precond(), PRE_COND_OPTIONS)
+
+            _LOGGER.debug("_get_cars - Feature Check: remote_engine_start:%s ", {car.features.remote_engine_start})
+            if car.features.remote_engine_start:
+                car.remote_start = self._get_car_values(
+                    api_result, car.finorvin, Remote_Start(), REMOTE_START_OPTIONS)
 
             self.cars.append(car)
 

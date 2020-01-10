@@ -16,7 +16,7 @@ Optional configuration values
 mercedesmeapi:
   username: YOUR_USERNAME
   password: YOUR_PASSWORD
-  pin: XXXX                           # required to open the lock, please use the Mercedes web or app to set-up the pin
+  pin: XXXX                           # required to open the lock or to start the engine, please use the Mercedes web or app to set-up the pin
   
   country_code: DE                    # two digts country code
   accept_lang: en_DE                  # four digits country code
@@ -30,6 +30,7 @@ mercedesmeapi:
 
 Available components:
 * Lock
+* Remote Start Switch
 * Aux Heat Switch
 
 * Binary Sensors:
@@ -50,7 +51,7 @@ Available components:
 * Sensors:
 ```
 * lock
-  attributes: doorStateFrontLeft, doorStateFrontRight, doorStateRearLeft, doorStateRearRight, frontLeftDoorLocked, frontRightDoorLocked, rearLeftDoorLocked, rearRightDoorLocked, frontLeftDoorClosed, frontRightDoorClosed, rearLeftDoorClosed, rearRightDoorClosed, rearRightDoorClosed, doorsClosed, trunkStateRollup, sunroofstatus, fuelLidClosed
+  attributes: doorStateFrontLeft, doorStateFrontRight, doorStateRearLeft, doorStateRearRight, frontLeftDoorLocked, frontRightDoorLocked, rearLeftDoorLocked, rearRightDoorLocked, frontLeftDoorClosed, frontRightDoorClosed, rearLeftDoorClosed, rearRightDoorClosed, rearRightDoorClosed, doorsClosed, trunkStateRollup, sunroofstatus, fuelLidClosed, engineHoodClosed
 
 * rangeElectricKm
   attributes: rangeelectric, rangeElectricKm, criticalStateOfSoc, maxrange, stateOfChargeElectricPercent, endofchargetime, criticalStateOfDeparturetimesoc, warninglowbattery, electricconsumptionreset, maxStateOfChargeElectricPercent, supplybatteryvoltage, electricChargingStatus, chargingstatus, soc, showChargingErrorAndDemand, electricconsumptionstart
