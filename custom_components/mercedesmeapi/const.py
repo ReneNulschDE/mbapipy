@@ -83,7 +83,12 @@ SWITCHES = {
     "remote_start": [
         "REMOTE START", None, "remote_start",
         "remoteEngine", "value",
-        "remote_engine_start", None, "remote_start"],
+        "remote_engine_start",
+        {
+            "remoteEngine",
+            "remoteStartEndtime",
+            "remoteStartTemperature"},
+        "remote_start"],
 }
 
 SENSORS = {

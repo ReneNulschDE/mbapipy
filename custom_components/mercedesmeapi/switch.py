@@ -45,7 +45,7 @@ async def async_setup_platform(hass, config, async_add_devices,
                         feature_name=value[2],
                         object_name=value[3],
                         attrib_name=value[4],
-                        extended_attributes=None,
+                        extended_attributes=value[6],
                         switch_action=value[7]))
 
     async_add_devices(devices, True)
