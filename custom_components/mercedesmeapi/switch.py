@@ -35,17 +35,17 @@ async def async_setup_platform(hass, config, async_add_devices,
             if value[5] is None or getattr(car.features, value[5]) is True:
                 devices.append(
                     MercedesMESwitch(
-                        hass,
-                        data,
-                        key,
-                        value[0],
-                        car.finorvin,
-                        value[1],
-                        car.licenseplate,
-                        value[2],
-                        value[3],
-                        value[4],
-                        None,
+                        hass=hass,
+                        data=data,
+                        internal_name=key,
+                        sensor_name=value[0],
+                        vin=car.finorvin,
+                        unit=value[1],
+                        licenseplate=car.licenseplate,
+                        feature_name=value[2],
+                        object_name=value[3],
+                        attrib_name=value[4],
+                        extended_attributes=None,
                         switch_action=value[7]))
 
     async_add_devices(devices, True)
@@ -85,3 +85,7 @@ class MercedesMESwitch(MercedesMeEntity, SwitchDevice):
 
         if self._kwargs.get('switch_action', None) == 'heater':
             return STATE_OFF if not self._state else STATE_ON
+
+        if self._kwargs.get('switch_action', None) == 'remote_start':
+            return STATE_ON if self._state == 'RUNNING_FROM_REMOTESTART' \
+                else STATE_OFF

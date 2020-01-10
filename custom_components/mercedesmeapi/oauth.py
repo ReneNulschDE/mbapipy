@@ -302,4 +302,3 @@ class MercedesMeOAuth(object):
         return str(base64.urlsafe_b64encode(code_challenge.digest()), "utf-8").rstrip(
             "="
         )
-
