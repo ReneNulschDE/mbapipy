@@ -30,10 +30,13 @@ mercedesmeapi:
 
 # Available components
 ## Lock
+
 * Pin  is required to unlock the car
+
 ## Switches 
+
 * Remote Start Switch
-  
+
   Pin is required to start the car
 
 * Aux Heat Switch
@@ -78,7 +81,9 @@ mercedesmeapi:
   
 
 # Logging
+
 Set the logging to debug with the following settings in case of problems.
+
 ```
 logger:
   default: warn
@@ -90,6 +95,7 @@ logger:
 ```
 
 # Notes
+
 - Tested countries: CA, DE, DK, FI, NL, PL, UK, US
 - For Canada please use Country Code US currently
 - Cars out of North America and Europe can't be used at the same time
