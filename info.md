@@ -1,17 +1,17 @@
-# mbapipy
+# mercedesmeapi
 
 MercedesME platform as a Custom Component for Home Assistant.
 
-Please login once in the MercedesME IOS or Android app before you install this component
+IMPORTANT: Please login once in the MercedesME IOS or Android app before you install this component
 
-Configuration:
+## Configuration:
 ```
 mercedesmeapi:
   username: YOUR_USERNAME
   password: YOUR_PASSWORD
 ```
 
-Optional configuration values
+# Optional configuration values
 ```
 mercedesmeapi:
   username: YOUR_USERNAME
@@ -28,46 +28,56 @@ mercedesmeapi:
       tire_warning: tireWarningRollup
 ```
 
-Available components:
-* Lock
+# Available components
+## Lock
+* Pin  is required to unlock the car
+## Switches 
 * Remote Start Switch
+  
+  Pin is required to start the car
+
 * Aux Heat Switch
 
-* Binary Sensors:
-```
-* warningenginelight
-  attributes: warningbrakefluid, warningwashwater, warningcoolantlevellow, warninglowbattery
+## Binary Sensors:
 
-* parkbrakestatus
-  attributes: preWarningBrakeLiningWear
+  * `warningenginelight`
 
-* windowsClosed
-  attributes: windowstatusrearleft, windowstatusrearright, windowstatusfrontright, windowstatusfrontleft
+    `attributes: warningbrakefluid, warningwashwater, warningcoolantlevellow, warninglowbattery`
 
-* tirewarninglamp
-  attributes: tirepressureRearLeft, tirepressureRearRight, tirepressureFrontRight, tirepressureFrontLeft, tirewarningsrdk, tirewarningsprwtireMarkerFrontRight, tireMarkerFrontLeft, tireMarkerRearLeft, tireMarkerRearRight, tireWarningRollup, lastTirepressureTimestamp
-```
+  * `parkbrakestatus`
 
-* Sensors:
-```
-* lock
-  attributes: doorStateFrontLeft, doorStateFrontRight, doorStateRearLeft, doorStateRearRight, frontLeftDoorLocked, frontRightDoorLocked, rearLeftDoorLocked, rearRightDoorLocked, frontLeftDoorClosed, frontRightDoorClosed, rearLeftDoorClosed, rearRightDoorClosed, rearRightDoorClosed, doorsClosed, trunkStateRollup, sunroofstatus, fuelLidClosed, engineHoodClosed
+    `attributes: preWarningBrakeLiningWear`
 
-* rangeElectricKm
-  attributes: rangeelectric, rangeElectricKm, criticalStateOfSoc, maxrange, stateOfChargeElectricPercent, endofchargetime, criticalStateOfDeparturetimesoc, warninglowbattery, electricconsumptionreset, maxStateOfChargeElectricPercent, supplybatteryvoltage, electricChargingStatus, chargingstatus, soc, showChargingErrorAndDemand, electricconsumptionstart
+  * `windowsClosed`
   
-* auxheatstatus
-  attributes: auxheatActive, auxheatwarnings, auxheatruntime, auxheatwarningsPush, auxheattimeselection, auxheattime1, auxheattime2, auxheattime3
+    `attributes: windowstatusrearleft, windowstatusrearright, windowstatusfrontright, windowstatusfrontleft`
 
-* tanklevelpercent
+  * `tirewarninglamp`
 
-* odometer
-  attributes: distanceReset, distanceStart, averageSpeedReset, averageSpeedStart, distanceZEReset, drivenTimeZEReset, drivenTimeReset, drivenTimeStart, ecoscoretotal, ecoscorefreewhl, ecoscorebonusrange, ecoscoreconst, ecoscoreaccel, gasconsumptionstart, gasconsumptionreset, gasTankRange, gasTankLevel, liquidconsumptionstart, liquidconsumptionreset, liquidRangeSkipIndication, rangeliquid, serviceintervaldays, tanklevelpercent, tankReserveLamp, batteryState
+    `attributes: tirepressureRearLeft, tirepressureRearRight, tirepressureFrontRight, tirepressureFrontLeft, tirewarningsrdk, tirewarningsprwtireMarkerFrontRight, tireMarkerFrontLeft, tireMarkerRearLeft, tireMarkerRearRight, tireWarningRollup, lastTirepressureTimestamp`
+
+## Sensors:
+
+* `lock`
+    
+  `attributes: doorStateFrontLeft, doorStateFrontRight, doorStateRearLeft, doorStateRearRight, frontLeftDoorLocked, frontRightDoorLocked, rearLeftDoorLocked, rearRightDoorLocked, frontLeftDoorClosed, frontRightDoorClosed, rearLeftDoorClosed, rearRightDoorClosed, rearRightDoorClosed, doorsClosed, trunkStateRollup, sunroofstatus, fuelLidClosed, engineHoodClosed`
+
+* `rangeElectricKm`
+    
+  `attributes: rangeelectric, rangeElectricKm, criticalStateOfSoc, maxrange, stateOfChargeElectricPercent, endofchargetime, criticalStateOfDeparturetimesoc, warninglowbattery, electricconsumptionreset, maxStateOfChargeElectricPercent, supplybatteryvoltage, electricChargingStatus, chargingstatus, soc, showChargingErrorAndDemand, electricconsumptionstart`
   
-```
+* `auxheatstatus`
 
+  `attributes: auxheatActive, auxheatwarnings, auxheatruntime, auxheatwarningsPush, auxheattimeselection, auxheattime1, auxheattime2, auxheattime3`
 
-Logging:
+* `tanklevelpercent`
+
+* `odometer`
+  
+  `attributes: distanceReset, distanceStart, averageSpeedReset, averageSpeedStart, distanceZEReset, drivenTimeZEReset, drivenTimeReset, drivenTimeStart, ecoscoretotal, ecoscorefreewhl, ecoscorebonusrange, ecoscoreconst, ecoscoreaccel, gasconsumptionstart, gasconsumptionreset, gasTankRange, gasTankLevel, liquidconsumptionstart, liquidconsumptionreset, liquidRangeSkipIndication, rangeliquid, serviceintervaldays, tanklevelpercent, tankReserveLamp, batteryState` 
+  
+
+## Logging
 Set the logging to debug with the following settings in case of problems.
 ```
 logger:
@@ -79,7 +89,11 @@ logger:
     custom_components.mercedesmeapi.OAuth: debug
 ```
 
-Notes:
+## Notes
 - Tested countries: CA, DE, DK, FI, NL, PL, UK, US
 - For Canada please use Country Code US currently
 - Cars out of North America and Europe can't be used at the same time
+
+## Useful links
+
+- [Forum post](https://community.home-assistant.io/t/mercedes-me-component/41911)
