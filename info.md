@@ -11,7 +11,7 @@ mercedesmeapi:
   password: YOUR_PASSWORD
 ```
 
-# Optional configuration values
+## Optional configuration values
 ```
 mercedesmeapi:
   username: YOUR_USERNAME
@@ -40,44 +40,44 @@ mercedesmeapi:
 
 ## Binary Sensors:
 
-  * `warningenginelight`
+  * warningenginelight
 
     `attributes: warningbrakefluid, warningwashwater, warningcoolantlevellow, warninglowbattery`
 
-  * `parkbrakestatus`
+  * parkbrakestatus
 
     `attributes: preWarningBrakeLiningWear`
 
-  * `windowsClosed`
+  * windowsClosed
   
     `attributes: windowstatusrearleft, windowstatusrearright, windowstatusfrontright, windowstatusfrontleft`
 
-  * `tirewarninglamp`
+  * tirewarninglamp
 
     `attributes: tirepressureRearLeft, tirepressureRearRight, tirepressureFrontRight, tirepressureFrontLeft, tirewarningsrdk, tirewarningsprwtireMarkerFrontRight, tireMarkerFrontLeft, tireMarkerRearLeft, tireMarkerRearRight, tireWarningRollup, lastTirepressureTimestamp`
 
 ## Sensors:
 
-* `lock`
+* lock
     
   `attributes: doorStateFrontLeft, doorStateFrontRight, doorStateRearLeft, doorStateRearRight, frontLeftDoorLocked, frontRightDoorLocked, rearLeftDoorLocked, rearRightDoorLocked, frontLeftDoorClosed, frontRightDoorClosed, rearLeftDoorClosed, rearRightDoorClosed, rearRightDoorClosed, doorsClosed, trunkStateRollup, sunroofstatus, fuelLidClosed, engineHoodClosed`
 
-* `rangeElectricKm`
+* rangeElectricKm
     
   `attributes: rangeelectric, rangeElectricKm, criticalStateOfSoc, maxrange, stateOfChargeElectricPercent, endofchargetime, criticalStateOfDeparturetimesoc, warninglowbattery, electricconsumptionreset, maxStateOfChargeElectricPercent, supplybatteryvoltage, electricChargingStatus, chargingstatus, soc, showChargingErrorAndDemand, electricconsumptionstart`
   
-* `auxheatstatus`
+* auxheatstatus
 
   `attributes: auxheatActive, auxheatwarnings, auxheatruntime, auxheatwarningsPush, auxheattimeselection, auxheattime1, auxheattime2, auxheattime3`
 
-* `tanklevelpercent`
+* tanklevelpercent
 
-* `odometer`
+* odometer
   
   `attributes: distanceReset, distanceStart, averageSpeedReset, averageSpeedStart, distanceZEReset, drivenTimeZEReset, drivenTimeReset, drivenTimeStart, ecoscoretotal, ecoscorefreewhl, ecoscorebonusrange, ecoscoreconst, ecoscoreaccel, gasconsumptionstart, gasconsumptionreset, gasTankRange, gasTankLevel, liquidconsumptionstart, liquidconsumptionreset, liquidRangeSkipIndication, rangeliquid, serviceintervaldays, tanklevelpercent, tankReserveLamp, batteryState` 
   
 
-## Logging
+# Logging
 Set the logging to debug with the following settings in case of problems.
 ```
 logger:
@@ -89,11 +89,11 @@ logger:
     custom_components.mercedesmeapi.OAuth: debug
 ```
 
-## Notes
+# Notes
 - Tested countries: CA, DE, DK, FI, NL, PL, UK, US
 - For Canada please use Country Code US currently
 - Cars out of North America and Europe can't be used at the same time
 
-## Useful links
+# Useful links
 
 - [Forum post](https://community.home-assistant.io/t/mercedes-me-component/41911)
