@@ -2,7 +2,10 @@
 
 MercedesME platform as a Custom Component for Home Assistant.
 
-IMPORTANT: Please login once in the MercedesME IOS or Android app before you install this component
+IMPORTANT: 
+
+* Please login once in the MercedesME IOS or Android app before you install this component. 
+* For US/CA the app name is "MercedesME Connect" (only newer cars are supported in this region)
 
 ## Configuration:
 ```
