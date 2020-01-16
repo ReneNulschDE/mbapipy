@@ -524,7 +524,7 @@ class Controller(object):
 
             car.licenseplate = c.get("licensePlate", "")
 
-            if car.licenseplate == "":
+            if not car.licenseplate:
                 car.licenseplate = car.finorvin
 
             car.vehicle_title = c.get("vehicleTitle", None)

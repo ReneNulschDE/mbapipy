@@ -164,7 +164,7 @@ class MercedesMeEntity(Entity):
         self._hass = hass
         self._data = data
         self._state = False
-        self._name = licenseplate + " " + sensor_name
+        self._name = f"{licenseplate} {sensor_name}"
         self._internal_name = internal_name
         self._internal_unit = unit
         self._unit = unit
