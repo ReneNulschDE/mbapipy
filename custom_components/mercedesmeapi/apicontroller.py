@@ -29,6 +29,7 @@ CAR_HEAT_ON_URL = lambda vhs_url: f"{vhs_url}/%s/auxheat/start"                 
 CAR_HEAT_OFF_URL = lambda vhs_url: f"{vhs_url}/%s/auxheat/stop"                                     # noqa: E731, E501
 CAR_REMOTE_START_ON_URL = lambda vhs_url: f"{vhs_url}/%s/remoteengine/start"                        # noqa: E731, E501
 CAR_REMOTE_START_OFF_URL = lambda vhs_url: f"{vhs_url}/%s/remoteengine/stop"                        # noqa: E731, E501
+CAR_CLIMATE_CONF_URL = lambda vhs_url: f"{vhs_url}/%s/precond/configure"                            # noqa: E731, E501
 CAR_CLIMATE_ON_URL = lambda vhs_url: f"{vhs_url}/%s/precond/start"                                  # noqa: E731, E501
 CAR_CLIMATE_OFF_URL = lambda vhs_url: f"{vhs_url}/%s/precondAtDeparture/disable"                    # noqa: E731, E501
 CAR_FEATURE_URL = lambda usr_url: f"{usr_url}/api/v2/dashboarddata/%s/vehicle"                      # noqa: E731, E501
@@ -382,16 +383,22 @@ class Controller(object):
             None)
 
     def climate_on(self, car_id):
-        now = datetime.datetime.now()
-        post_data = json.dumps(
-            {"currentDepartureTime": (now.hour * 60 + now.minute)})
+        now = self._round_time()
+        now_str = f"{now.hour:02}:{now.minute:02}"
 
-        return self._execute_car_action(
-            CAR_CLIMATE_ON_URL(URL_VHS_API(self.region)),
-            car_id.get('car_id'),
-            'climate_on',
-            None,
-            post_data)
+        post_data = json.dumps({"currentDepartureTime": (now.hour * 60 + now.minute)},
+                               separators=(',', ':'))
+        _LOGGER.debug("climate_on post_data:")
+        _LOGGER.debug(post_data)
+        if self._execute_car_action(CAR_CLIMATE_ON_URL, car_id.get('car_id'), 'climate_on', None, post_data):
+            post_data2 = json.dumps({"departureTime": now_str, "mode": "SINGLE_DEPARTURE"},
+                                    separators=(',', ':'))
+            _LOGGER.debug("climate_conf post_data:")
+            _LOGGER.debug(post_data2)
+            self._execute_car_action(CAR_CLIMATE_CONF_URL, car_id.get('car_id'), 'climate_conf', None, post_data2)
+        else:
+            _LOGGER.debug("climate_on FAILED")
+            return False
 
     def climate_off(self, car_id):
         return self._execute_car_action(
@@ -427,14 +434,14 @@ class Controller(object):
                     url % car_id, header, "get", None)
                 _LOGGER.debug(result)
 
-                if result.get('status') == 'PENDING':
+                if result.get('status') != 'FAILED' and result.get('status') != 'SUCCESS':
                     wait_counter = wait_counter + 1
                     time.sleep(3)
                 else:
                     break
 
-        self.update()
         if result.get('status') == 'SUCCESS':
+            self.update()
             return True
         else:
             return False
@@ -442,7 +449,7 @@ class Controller(object):
     def _update_cars(self):
         cur_time = time.time()
         with self.__lock:
-            if self.auth_handler.is_token_expired(self.auth_handler.token_info):                    # noqa: E501
+            if self.auth_handler.is_token_expired(self.auth_handler.token_info):
                 self.auth_handler.refresh_access_token(
                     self.auth_handler.token_info['refresh_token'])
 
@@ -673,7 +680,10 @@ class Controller(object):
 
     def _retrieve_json_at_url(self, url, headers, type, post_data=None):
         try:
-            _LOGGER.debug("Connect to URL %s %s", type, str(url))
+            if post_data is None:
+                _LOGGER.debug("Connect to URL %s %s %s", type, str(url), headers)
+            else:
+                _LOGGER.debug("Connect to URL %s %s %s %s", type, str(url), headers, post_data)
 
             if type == "get":
                 res = self.session.get(url,
@@ -710,3 +720,10 @@ class Controller(object):
         if self.auth_handler.is_token_expired(self.auth_handler.token_info):
             self.auth_handler.refresh_access_token(
                 self.auth_handler.token_info['refresh_token'])
+
+    def _round_current_time(self, roundTo=15):
+        t = datetime.datetime.now()  # type: datetime
+        t += datetime.timedelta(minutes=(roundTo + 1))
+        t += datetime.timedelta(minutes=(t.minute / roundTo) * roundTo - t.minute)
+        t -= datetime.timedelta(seconds=(t.second))
+        return t
