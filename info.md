@@ -99,7 +99,7 @@ logger:
 
 # Notes
 
-- Tested countries: CA, DE, DK, FI, NL, PL, UK, US
+- Tested countries: CA, DE, DK, ES, FI, NL, PL, UK, US
 - For Canada please use Country Code US currently
 - Cars out of North America and Europe can't be used at the same time
 
