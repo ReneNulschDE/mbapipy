@@ -383,19 +383,21 @@ class Controller(object):
             None)
 
     def climate_on(self, car_id):
-        now = self._round_time()
+        now = self._round_current_time()
         now_str = f"{now.hour:02}:{now.minute:02}"
 
         post_data = json.dumps({"currentDepartureTime": (now.hour * 60 + now.minute)},
                                separators=(',', ':'))
         _LOGGER.debug("climate_on post_data:")
         _LOGGER.debug(post_data)
-        if self._execute_car_action(CAR_CLIMATE_ON_URL, car_id.get('car_id'), 'climate_on', None, post_data):
+        if self._execute_car_action(CAR_CLIMATE_ON_URL(URL_VHS_API(self.region)),
+                                    car_id.get('car_id'), 'climate_on', None, post_data):
             post_data2 = json.dumps({"departureTime": now_str, "mode": "SINGLE_DEPARTURE"},
                                     separators=(',', ':'))
             _LOGGER.debug("climate_conf post_data:")
             _LOGGER.debug(post_data2)
-            self._execute_car_action(CAR_CLIMATE_CONF_URL, car_id.get('car_id'), 'climate_conf', None, post_data2)
+            self._execute_car_action(CAR_CLIMATE_CONF_URL(URL_VHS_API(self.region)),
+                                     car_id.get('car_id'), 'climate_conf', None, post_data2)
         else:
             _LOGGER.debug("climate_on FAILED")
             return False
