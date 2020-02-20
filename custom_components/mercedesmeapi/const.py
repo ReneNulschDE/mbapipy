@@ -111,7 +111,8 @@ SENSORS = {
                  "doorsClosed",
                  "trunkStateRollup",
                  "sunroofstatus",
-                 "engineHoodClosed"}],
+                 "engineHoodClosed",
+                 "carAlarm"}],
 
     "rangeElectricKm": ["Range electric", LENGTH_KILOMETERS,
                         "electric", "rangeElectricKm",
