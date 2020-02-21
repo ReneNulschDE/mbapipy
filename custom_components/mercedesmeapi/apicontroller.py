@@ -119,8 +119,7 @@ DOOR_OPTIONS = [
     'sunroofstatus',
     'locked',
     'fuelLidClosed',
-    'engineHoodClosed',
-    'carAlarm']
+    'engineHoodClosed']
 
 ELECTRIC_OPTIONS = [
     'rangeelectric',
