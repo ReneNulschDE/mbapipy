@@ -148,7 +148,8 @@ BINARY_SENSOR_OPTIONS = [
     'readingLampFrontRight',
     'readingLampFrontLeft',
     'preWarningBrakeLiningWear',
-    'warninglowbattery']
+    'warninglowbattery',
+    'liquidRangeCritical']
 
 AUX_HEAT_OPTIONS = [
     'auxheatActive',

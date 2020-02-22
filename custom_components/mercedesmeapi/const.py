@@ -11,6 +11,14 @@ MERCEDESME_COMPONENTS = [
 
 BINARY_SENSORS = {
 
+    "liquidRangeCritical": ["Liquid Range Critical",
+                            None,
+                            "binarysensors",
+                            "liquidRangeCritical",
+                            "value",
+                            None,
+                            None],
+
     "warningbrakefluid": ["Low Brake Fluid Warning",
                           None,
                           "binarysensors",

@@ -46,6 +46,8 @@ Available components:
   
 * warningbrakefluid
 
+* liquidRangeCritical
+
 * warningenginelight
   attributes: warningbrakefluid, warningwashwater, warningcoolantlevellow, warninglowbattery
 
