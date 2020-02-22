@@ -38,6 +38,14 @@ Available components:
 
 * Binary Sensors:
 ```
+* warningwashwater
+  
+* warningcoolantlevellow
+  
+* warninglowbattery
+  
+* warningbrakefluid
+
 * warningenginelight
   attributes: warningbrakefluid, warningwashwater, warningcoolantlevellow, warninglowbattery
 

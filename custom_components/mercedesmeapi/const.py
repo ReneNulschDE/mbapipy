@@ -11,6 +11,39 @@ MERCEDESME_COMPONENTS = [
 
 BINARY_SENSORS = {
 
+    "warningbrakefluid": ["Low Brake Fluid Warning",
+                          None,
+                          "binarysensors",
+                          "warningbrakefluid",
+                          "value",
+                          None,
+                          None],
+
+    "warningwashwater": ["Low Wash Water Warning",
+                         None,
+                         "binarysensors",
+                         "warningwashwater",
+                         "value",
+                         None,
+                         None],
+
+    "warningcoolantlevellow": ["Low Coolant Level Warning",
+                               None,
+                               "binarysensors",
+                               "warningcoolantlevellow",
+                               "value",
+                               None,
+                               None],
+
+
+    "warninglowbattery": ["Low Battery Warning",
+                          None,
+                          "binarysensors",
+                          "warninglowbattery",
+                          "value",
+                          None,
+                          None],
+
     "warningenginelight": ["Engine Light Warning",
                            None,
                            "binarysensors",
@@ -111,7 +144,7 @@ SENSORS = {
                  "doorsClosed",
                  "trunkStateRollup",
                  "sunroofstatus",
-                 "engineHoodClosed"}],
+                 "engineHoodClosed", }],
 
     "rangeElectricKm": ["Range electric", LENGTH_KILOMETERS,
                         "electric", "rangeElectricKm",

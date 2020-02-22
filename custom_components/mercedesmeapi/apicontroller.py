@@ -119,7 +119,7 @@ DOOR_OPTIONS = [
     'sunroofstatus',
     'locked',
     'fuelLidClosed',
-    'engineHoodClosed']
+    'engineHoodClosed', ]
 
 ELECTRIC_OPTIONS = [
     'rangeelectric',
@@ -147,7 +147,8 @@ BINARY_SENSOR_OPTIONS = [
     'parkbrakestatus',
     'readingLampFrontRight',
     'readingLampFrontLeft',
-    'preWarningBrakeLiningWear']
+    'preWarningBrakeLiningWear',
+    'warninglowbattery']
 
 AUX_HEAT_OPTIONS = [
     'auxheatActive',
