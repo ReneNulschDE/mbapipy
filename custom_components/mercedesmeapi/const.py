@@ -188,7 +188,10 @@ SENSORS = {
                           "auxheattime3"}],
 
     "tanklevelpercent": ["Fuel Level", "%", "odometer", "tanklevelpercent",
-                         "value", None, None],
+                         "value", None,
+                         {
+                             "tankLevelAdBlue"
+                         }],
 
     "odometer": ["Odometer", LENGTH_KILOMETERS, "odometer", "odo",
                  "value", None,
@@ -217,5 +220,6 @@ SENSORS = {
                      "serviceintervaldays",
                      "tanklevelpercent",
                      "tankReserveLamp",
-                     "batteryState"}],
+                     "batteryState",
+                     "tankLevelAdBlue"}],
 }

@@ -71,7 +71,8 @@ ODOMETER_OPTIONS = [
     "serviceintervaldays",
     "tanklevelpercent",
     "tankReserveLamp",
-    "batteryState"]
+    "batteryState",
+    "tankLevelAdBlue"]
 
 LOCATION_OPTIONS = [
     "latitude",
