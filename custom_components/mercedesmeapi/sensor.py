@@ -47,7 +47,7 @@ async def async_setup_platform(hass, config, async_add_devices,
                     value[3],
                     value[4],
                     value[6])
-                if device.device_retrieval_status() == "VALID":
+                if device.device_retrieval_status() in ["VALID", "NOT_RECEIVED"] :
                     devices.append(device)
 
     async_add_devices(devices, True)
@@ -59,6 +59,10 @@ class MercedesMESensor(MercedesMeEntity):
     @property
     def state(self):
         """Return the state of the sensor."""
+
+        if self.device_retrieval_status == "NOT_RECEIVED":
+            return "NOT_RECEIVED"
+
         if self._unit == LENGTH_KILOMETERS and \
            not self._hass.config.units.is_metric:
             return round(

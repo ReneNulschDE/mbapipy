@@ -222,4 +222,22 @@ SENSORS = {
                      "tankReserveLamp",
                      "batteryState",
                      "tankLevelAdBlue"}],
+
+    "car_alarm": ["Car Alarm", None, "car_alarm", "carAlarm",
+                  "value", 'car_alarm',
+                  {
+                      "lastTheftWarning",
+                      "towSensor",
+                      "theftSystemArmed",
+                      "parkEventType",
+                      "parkEventLevel",
+                      "carAlarmLastTime",
+                      "towProtectionSensorStatus",
+                      "theftAlarmActive",
+                      "lastTheftWarningReason",
+                      "lastParkEvent",
+                      "collisionAlarmTimestamp",
+                      "interiorSensor",
+                      "carAlarmReason"}],
+
 }

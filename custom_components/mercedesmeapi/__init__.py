@@ -248,15 +248,17 @@ class MercedesMeEntity(Entity):
         }
         if self._extended_attributes is not None:
             for attrib in self._extended_attributes:
-                if (
-                    self._get_car_value(
-                        self._feature_name, attrib, "retrievalstatus", "error"
-                    )
-                    == "VALID"
-                ):
+
+                retrievalstatus = self._get_car_value(self._feature_name, attrib,
+                                                      "retrievalstatus", "error")
+
+                if retrievalstatus == "VALID":
                     state[attrib] = self._get_car_value(
                         self._feature_name, attrib, "value", "error"
                     )
+
+                if retrievalstatus == "NOT_RECEIVED":
+                    state[attrib] = "NOT_RECEIVED"
         return state
 
     @property

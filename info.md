@@ -93,8 +93,11 @@ mercedesmeapi:
 * odometer
   
   `attributes: distanceReset, distanceStart, averageSpeedReset, averageSpeedStart, distanceZEReset, drivenTimeZEReset, drivenTimeReset, drivenTimeStart, ecoscoretotal, ecoscorefreewhl, ecoscorebonusrange, ecoscoreconst, ecoscoreaccel, gasconsumptionstart, gasconsumptionreset, gasTankRange, gasTankLevel, liquidconsumptionstart, liquidconsumptionreset, liquidRangeSkipIndication, rangeliquid, serviceintervaldays, tanklevelpercent, tankReserveLamp, batteryState, tankLevelAdBlue` 
-  
 
+* car alarm
+
+  `attributes: lastTheftWarning, towSensor, theftSystemArmed, parkEventType, parkEventLevel, carAlarmLastTime, towProtectionSensorStatus, theftAlarmActive, lastTheftWarningReason, lastParkEvent, collisionAlarmTimestamp, interiorSensor, carAlarmReason`
+  
 # Logging
 
 Set the logging to debug with the following settings in case of problems.

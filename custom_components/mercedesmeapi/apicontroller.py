@@ -99,7 +99,8 @@ WINDOW_OPTIONS = [
     "windowstatusrearright",
     "windowstatusfrontright",
     "windowstatusfrontleft",
-    'windowsClosed']
+    "windowsClosed",
+    "flipWindowStatus"]
 
 DOOR_OPTIONS = [
     'doorStateFrontLeft',
@@ -170,8 +171,23 @@ PRE_COND_OPTIONS = [
 REMOTE_START_OPTIONS = [
     'remoteEngine',
     'remoteStartEndtime',
-    'remoteStartTemperature'
-]
+    'remoteStartTemperature']
+
+CAR_ALARM_OPTIONS = [
+    'lastTheftWarning',
+    'towSensor',
+    'theftSystemArmed',
+    'carAlarm',
+    'parkEventType',
+    'parkEventLevel',
+    'carAlarmLastTime',
+    'towProtectionSensorStatus',
+    'theftAlarmActive',
+    'lastTheftWarningReason',
+    'lastParkEvent',
+    'collisionAlarmTimestamp',
+    'interiorSensor',
+    'carAlarmReason']
 
 
 class Car(object):
@@ -201,6 +217,7 @@ class Car(object):
         self.auxheat = None
         self.precond = None
         self.electric = None
+        self.car_alarm = None
 
 
 class StateOfObject(object):
@@ -269,6 +286,11 @@ class Binary_Sensors(object):
 class Remote_Start(object):
     def __init__(self):
         self.name = "Remote_Start"
+
+
+class Car_Alarm(object):
+    def __init__(self):
+        self.name = "Car_Alarm"
 
 
 class Location(object):
@@ -482,29 +504,30 @@ class Controller(object):
                     car.windows = self._get_car_values(
                         api_result, car.finorvin, Windows(), WINDOW_OPTIONS)
 
-                    _LOGGER.debug("_update_cars - Feature Check: charging_clima_control:%s ", {car.features.charging_clima_control})
                     if car.features.charging_clima_control:
                         car.electric = self._get_car_values(
                             api_result, car.finorvin,
                             Electric(), ELECTRIC_OPTIONS)
 
-                    _LOGGER.debug("_update_cars - Feature Check: aux_heat:%s ", {car.features.aux_heat})
                     if car.features.aux_heat:
                         car.auxheat = self._get_car_values(
                             api_result, car.finorvin,
                             Auxheat(), AUX_HEAT_OPTIONS)
 
-                    _LOGGER.debug("_update_cars - Feature Check: charging_clima_control:%s ", {car.features.charging_clima_control})
                     if car.features.charging_clima_control:
                         car.precond = self._get_car_values(
                             api_result, car.finorvin,
                             Precond(), PRE_COND_OPTIONS)
 
-                    _LOGGER.debug("_update_cars - Feature Check: remote_engine_start:%s ", {car.features.remote_engine_start})
                     if car.features.remote_engine_start:
                         car.remote_start = self._get_car_values(
                             api_result, car.finorvin,
                             Remote_Start(), REMOTE_START_OPTIONS)
+
+                    if car.features.car_alarm:
+                        car.car_alarm = self._get_car_values(
+                            api_result, car.finorvin,
+                            Car_Alarm(), CAR_ALARM_OPTIONS)
 
                 self.last_update_time = time.time()
 
@@ -585,6 +608,11 @@ class Controller(object):
             if car.features.remote_engine_start:
                 car.remote_start = self._get_car_values(
                     api_result, car.finorvin, Remote_Start(), REMOTE_START_OPTIONS)
+
+            _LOGGER.debug("_get_cars - Feature Check: car_alarm:%s ", {car.features.car_alarm})
+            if car.features.car_alarm:
+                car.car_alarm = self._get_car_values(
+                    api_result, car.finorvin, Car_Alarm(), CAR_ALARM_OPTIONS)
 
             self.cars.append(car)
 
