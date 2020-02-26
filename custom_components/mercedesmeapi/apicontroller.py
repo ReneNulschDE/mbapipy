@@ -451,9 +451,9 @@ class Controller(object):
 
         _LOGGER.debug(result)
 
-        if post_data is not None:
-            del header['Content-Type']
-            del header['Content-Length']
+        if result is None:
+            _LOGGER.error("Failed to execute action %s for car %s.", action, car_id)
+            return False
 
         if result.get("status") == 'PENDING':
             wait_counter = 0
