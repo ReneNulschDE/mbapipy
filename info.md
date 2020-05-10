@@ -1,3 +1,7 @@
+{% if selected.replace("v", "").replace("b", "").replace(".","") | int > 36  %}
+> :warning: **Home Assistant Core V.0.110 or higher required**: Home Assistant Core V.0.110 or higher required
+{% endif %}
+
 # mercedesmeapi
 
 MercedesME platform as a Custom Component for Home Assistant.

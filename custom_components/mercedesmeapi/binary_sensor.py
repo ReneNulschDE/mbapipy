@@ -6,7 +6,7 @@ https://github.com/ReneNulschDE/mbapipy/
 """
 import logging
 
-from homeassistant.components.binary_sensor import BinarySensorDevice
+from homeassistant.components.binary_sensor import BinarySensorEntity
 from . import (
     DOMAIN,
     CONF_TIRE_WARNING_INDICATOR,
@@ -66,7 +66,7 @@ async def async_setup_platform(hass, config, async_add_devices,
     async_add_devices(devices, True)
 
 
-class MercedesMEBinarySensor(MercedesMeEntity, BinarySensorDevice):
+class MercedesMEBinarySensor(MercedesMeEntity, BinarySensorEntity):
     """Representation of a Sensor."""
 
     @property

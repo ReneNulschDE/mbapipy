@@ -6,7 +6,7 @@ https://github.com/ReneNulschDE/mbapipy/
 """
 import logging
 
-from homeassistant.components.lock import LockDevice
+from homeassistant.components.lock import LockEntity
 from homeassistant.const import STATE_LOCKED, STATE_UNLOCKED
 
 from custom_components.mercedesmeapi import DOMAIN, MercedesMeEntity
@@ -50,7 +50,7 @@ async def async_setup_platform(hass, config, async_add_devices,
     async_add_devices(devices, True)
 
 
-class MercedesMELock(MercedesMeEntity, LockDevice):
+class MercedesMELock(MercedesMeEntity, LockEntity):
     """Representation of a Sensor."""
 
     @property
