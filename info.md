@@ -1,17 +1,17 @@
-{% if selected.replace("v", "").replace("b", "").replace(".","") | int > 36  %}
-> :warning: **Home Assistant Core V.0.110 or higher required**: Home Assistant Core V.0.110 or higher required
-{% endif %}
-
 # mercedesmeapi
 
 MercedesME platform as a Custom Component for Home Assistant.
 
-IMPORTANT: 
+IMPORTANT:
 
-* Please login once in the MercedesME IOS or Android app before you install this component. 
+* > :warning: **Home Assistant Core V.0.110 or higher required**
+
+* Please login once in the MercedesME IOS or Android app before you install this component.
+
 * For US/CA the app name is "MercedesME Connect" (only newer cars are supported in this region)
 
-## Configuration:
+## Configuration
+
 ```
 mercedesmeapi:
   username: YOUR_USERNAME
@@ -19,6 +19,7 @@ mercedesmeapi:
 ```
 
 ## Optional configuration values
+
 ```
 mercedesmeapi:
   username: YOUR_USERNAME
@@ -27,20 +28,21 @@ mercedesmeapi:
   
   country_code: DE                    # two digts country code
   accept_lang: en_DE                  # four digits country code
-  save_car_details: true              # save a json to the HA config directory with the features and states, please use this for debug only 
+  save_car_details: true              # save a json to the HA config directory with the features and states, please use this for debug only
   cars:                               # Optional block to overwrite car specific options
     - vin: FINXXXXXXXXXXXXX1          # required finorvin
-      tire_warning: tirewarninglamp   # optional attributname for tire_warning binary sensor. some cars use tireWarningRollup or tirewarninglamp 
+      tire_warning: tirewarninglamp   # optional attributname for tire_warning binary sensor. some cars use tireWarningRollup or tirewarninglamp
     - vin: FINXXXXXXXXXXXXX2
       tire_warning: tireWarningRollup
 ```
 
 # Available components
+
 ## Lock
 
 * Pin  is required to unlock the car
 
-## Switches 
+## Switches
 
 * Remote Start Switch
 
@@ -48,42 +50,42 @@ mercedesmeapi:
 
 * Aux Heat Switch
 
-## Binary Sensors:
+## Binary Sensors
 
-  * warningwashwater
+* warningwashwater
   
-  * warningcoolantlevellow
+* warningcoolantlevellow
   
-  * warninglowbattery
-  
-  * warningbrakefluid
+* warninglowbattery
 
-  * liquidRangeCritical
+* warningbrakefluid
 
-  * warningenginelight
+* liquidRangeCritical
+
+* warningenginelight
 
     `attributes: warningbrakefluid, warningwashwater, warningcoolantlevellow, warninglowbattery`
 
-  * parkbrakestatus
+* parkbrakestatus
 
     `attributes: preWarningBrakeLiningWear`
 
-  * windowsClosed
+* windowsClosed
   
     `attributes: windowstatusrearleft, windowstatusrearright, windowstatusfrontright, windowstatusfrontleft`
 
-  * tirewarninglamp
+* tirewarninglamp
 
     `attributes: tirepressureRearLeft, tirepressureRearRight, tirepressureFrontRight, tirepressureFrontLeft, tirewarningsrdk, tirewarningsprwtireMarkerFrontRight, tireMarkerFrontLeft, tireMarkerRearLeft, tireMarkerRearRight, tireWarningRollup, lastTirepressureTimestamp`
 
-## Sensors:
+## Sensors
 
 * lock
-    
+
   `attributes: doorStateFrontLeft, doorStateFrontRight, doorStateRearLeft, doorStateRearRight, frontLeftDoorLocked, frontRightDoorLocked, rearLeftDoorLocked, rearRightDoorLocked, frontLeftDoorClosed, frontRightDoorClosed, rearLeftDoorClosed, rearRightDoorClosed, rearRightDoorClosed, doorsClosed, trunkStateRollup, sunroofstatus, fuelLidClosed, engineHoodClosed`
 
 * rangeElectricKm
-    
+
   `attributes: rangeelectric, rangeElectricKm, criticalStateOfSoc, maxrange, stateOfChargeElectricPercent, endofchargetime, criticalStateOfDeparturetimesoc, warninglowbattery, electricconsumptionreset, maxStateOfChargeElectricPercent, supplybatteryvoltage, electricChargingStatus, chargingstatus, soc, showChargingErrorAndDemand, electricconsumptionstart`
   
 * auxheatstatus
@@ -96,7 +98,7 @@ mercedesmeapi:
 
 * odometer
   
-  `attributes: distanceReset, distanceStart, averageSpeedReset, averageSpeedStart, distanceZEReset, drivenTimeZEReset, drivenTimeReset, drivenTimeStart, ecoscoretotal, ecoscorefreewhl, ecoscorebonusrange, ecoscoreconst, ecoscoreaccel, gasconsumptionstart, gasconsumptionreset, gasTankRange, gasTankLevel, liquidconsumptionstart, liquidconsumptionreset, liquidRangeSkipIndication, rangeliquid, serviceintervaldays, tanklevelpercent, tankReserveLamp, batteryState, tankLevelAdBlue` 
+  `attributes: distanceReset, distanceStart, averageSpeedReset, averageSpeedStart, distanceZEReset, drivenTimeZEReset, drivenTimeReset, drivenTimeStart, ecoscoretotal, ecoscorefreewhl, ecoscorebonusrange, ecoscoreconst, ecoscoreaccel, gasconsumptionstart, gasconsumptionreset, gasTankRange, gasTankLevel, liquidconsumptionstart, liquidconsumptionreset, liquidRangeSkipIndication, rangeliquid, serviceintervaldays, tanklevelpercent, tankReserveLamp, batteryState, tankLevelAdBlue`
 
 * car alarm
 
@@ -118,10 +120,12 @@ logger:
 
 # Notes
 
-- Tested countries: CA, DE, DK, ES, FI, NL, PL, UK, US
-- For Canada please use Country Code US currently
-- Cars out of North America and Europe can't be used at the same time
+* Tested countries: CA, DE, DK, ES, FI, NL, PL, UK, US
+
+* For Canada please use Country Code US currently
+
+* Cars out of North America and Europe can't be used at the same time
 
 # Useful links
 
-- [Forum post](https://community.home-assistant.io/t/mercedes-me-component/41911)
+* [Forum post](https://community.home-assistant.io/t/mercedes-me-component/41911)
