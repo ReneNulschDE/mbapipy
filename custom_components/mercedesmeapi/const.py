@@ -112,17 +112,17 @@ LOCKS = {
 
 SWITCHES = {
     "aux_heat": [
-        "AUX HEAT", None,
+        "Aux Heat", None,
         "auxheat", "auxheatActive",
         "value", "aux_heat", None, "heater"],
 
     "climate_control": [
-        "CLIMATE CONTROL", None, "precond",
+        "Climate Control", None, "precond",
         "preconditionState", "value",
         "charging_clima_control", None, "climate"],
 
     "remote_start": [
-        "REMOTE START", None, "remote_start",
+        "Remote Start", None, "remote_start",
         "remoteEngine", "value",
         "remote_engine_start",
         {
@@ -154,7 +154,7 @@ SENSORS = {
                  "sunroofstatus",
                  "engineHoodClosed", }],
 
-    "rangeElectricKm": ["Range electric", LENGTH_KILOMETERS,
+    "rangeElectricKm": ["Range Electric", LENGTH_KILOMETERS,
                         "electric", "rangeElectricKm",
                         "value", "charging_clima_control",
                         {
@@ -175,7 +175,7 @@ SENSORS = {
                             "showChargingErrorAndDemand",
                             "electricconsumptionstart"}],
 
-    "auxheatstatus": ["auxheat status", None, "auxheat", "auxheatstatus",
+    "auxheatstatus": ["Auxheat Status", None, "auxheat", "auxheatstatus",
                       "value", "aux_heat",
                       {
                           "auxheatActive",
