@@ -10,6 +10,7 @@ from datetime import timedelta
 import voluptuous as vol
 
 from homeassistant.const import (
+    CONF_NAME,
     CONF_PASSWORD,
     CONF_SCAN_INTERVAL,
     CONF_USERNAME,
@@ -48,6 +49,8 @@ CARS_SCHEMA = vol.Schema(
         vol.Required(CONF_CARS_VIN): cv.string,
         vol.Optional(CONF_TIRE_WARNING_INDICATOR,
                      default="tirewarninglamp"): cv.string,
+        vol.Optional(CONF_NAME,
+                     default="_notset_"): cv.string
     }
 )
 
@@ -178,6 +181,14 @@ class MercedesMeEntity(Entity):
         self._unique_id = slugify(f"{self._vin}_{self._internal_name}")
         self._car = next(car for car in self._data.cars
                          if car.finorvin == self._vin)
+
+        conf = hass.data[DOMAIN].config
+        if conf.get(CONF_CARS) is not None:
+            for car_conf in conf.get(CONF_CARS):
+                if car_conf.get(CONF_CARS_VIN) == vin:
+                    custom_car_name = car_conf.get(CONF_NAME)
+                    if custom_car_name != "_notset_":
+                        self._name = f"{custom_car_name} {sensor_name}".strip()
 
     @property
     def name(self):

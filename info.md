@@ -32,6 +32,7 @@ mercedesmeapi:
   cars:                               # Optional block to overwrite car specific options
     - vin: FINXXXXXXXXXXXXX1          # required finorvin
       tire_warning: tirewarninglamp   # optional attributname for tire_warning binary sensor. some cars use tireWarningRollup or tirewarninglamp
+      name: Some Car                  # Optional name of the car to overwrite the default naming. Use "" to remove the name
     - vin: FINXXXXXXXXXXXXX2
       tire_warning: tireWarningRollup
 ```
