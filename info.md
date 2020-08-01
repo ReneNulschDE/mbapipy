@@ -1,5 +1,8 @@
 # mercedesmeapi
 
+Update 2020-08-01: The car vendor has disabled the API endpoints. This integration does not work currently. 
+
+
 MercedesME platform as a Custom Component for Home Assistant.
 
 IMPORTANT:
